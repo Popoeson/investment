@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ann Investment Company</title>
+
+<style>
+
+/* ---------- GLOBAL STYLES ---------- */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #ffeccc;
+  color: #2e2e2e;
+  line-height: 1.6;
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3 {
+  color: #5E1010;
+}
+
+/* Gradient Section Background */
+.section {
+  padding: 80px 20px;
+  width: 100%;
+}
+
+.gradient {
+  background: linear-gradient(120deg, #5E1010 0%, #FFECCC 100%);
+  color: #fff;
+}
+
+.dark-text {
+  color: #5E1010;
+}
+
+/* ---------- BREADCRUMB NAV ---------- */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #5E1010;
+  padding: 12px 20px;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+nav a {
+  color: #FFECCC;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- CONTAINER ---------- */
+.container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+/* ---------- HOMEPAGE HERO ---------- */
+.hero {
+  padding-top: 120px; /* space under navbar */
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 42px;
+  font-weight: 800;
+}
+
+.hero p {
+  font-size: 18px;
+  max-width: 700px;
+  margin: 15px auto;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 12px 25px;
+  background: #5E1010;
+  color: #FFECCC;
+  border-radius: 8px;
+  text-decoration: none;
+  margin-top: 15px;
+  font-size: 16px;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+/* ---------- TESTIMONIALS ---------- */
+.testimonial {
+  background: #fff3e0;
+  padding: 15px;
+  margin: 10px 0;
+  border-left: 5px solid #5E1010;
+}
+
+/* ---------- CONTACT FORM ---------- */
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  background: #5E1010;
+  color: #FFECCC;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 700px) {
+  nav {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .hero h1 {
+    font-size: 30px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ---------- NAVIGATION / BREADCRUMBS ---------- -->
+<nav>
+  <a href="#home">Home</a>
+  <a href="#about">About Us</a>
+  <a href="#how">How It Works</a>
+  <a href="#faq">FAQ</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<!-- ---------- HOME SECTION ---------- -->
+<section id="home" class="section gradient">
+  <div class="container hero">
+    <h1>Grow Your Wealth With Smart, Transparent Investments</h1>
+    <p>
+      Ann Investment Company pools investor funds and deploys them into carefully selected opportunities. 
+      At the end of every cycle, profits or losses are shared proportionally — fair, transparent, and efficient.
+    </p>
+    <a href="#how" class="btn">Learn How It Works</a>
+    <a href="#contact" class="btn" style="background:#FFECCC;color:#5E1010;">Start Investing</a>
+  </div>
+</section>
+
+<!-- ---------- WHY CHOOSE US ---------- -->
+<section class="section">
+  <div class="container">
+    <h2 class="dark-text">Why Choose Us?</h2>
+
+    <p><strong>✔ Transparent System:</strong> Track your contributions, cycles, and returns in real-time.</p>
+    <p><strong>✔ Fair Profit Sharing:</strong> Every investor receives their true percentage share.</p>
+    <p><strong>✔ Focus on Safety:</strong> We prioritize low-to-medium risk opportunities.</p>
+    <p><strong>✔ US-Based & Fully Compliant:</strong> Professional standards from day one.</p>
+
+    <h3 class="dark-text" style="margin-top:40px;">Testimonials</h3>
+
+    <div class="testimonial">“Easy, modern, and trustworthy investing.” — David O.</div>
+    <div class="testimonial">“I love the transparency and reporting.” — Grace M.</div>
+
+  </div>
+</section>
+
+<!-- ---------- ABOUT SECTION ---------- -->
+<section id="about" class="section gradient">
+  <div class="container">
+    <h2>About Us</h2>
+    <p>
+      Ann Investment Company is a US-based startup dedicated to making investing simple and accessible. 
+      Our model allows everyday individuals to grow their wealth through a pooled investment system 
+      backed by transparency and responsible fund management.
+    </p>
+
+    <h3>Our Mission</h3>
+    <p>To make investing easy, safe, and accessible for everyone.</p>
+
+    <h3>Our Vision</h3>
+    <p>To become one of America’s most trusted investment platforms.</p>
+
+    <h3>Our Values</h3>
+    <p><strong>Integrity</strong> — We manage every dollar responsibly.</p>
+    <p><strong>Transparency</strong> — Clear reporting, fair sharing.</p>
+    <p><strong>Security</strong> — High-standard financial protection.</p>
+    <p><strong>Growth</strong> — Steady, realistic, and sustainable returns.</p>
+  </div>
+</section>
+
+<!-- ---------- HOW IT WORKS ---------- -->
+<section id="how" class="section">
+  <div class="container">
+    <h2 class="dark-text">How It Works</h2>
+
+    <h3>Step 1 — Create an Account</h3>
+    <p>Register in seconds and access your investor dashboard.</p>
+
+    <h3>Step 2 — Deposit Funds</h3>
+    <p>Top up your wallet securely in USD ($).</p>
+
+    <h3>Step 3 — We Invest the Pooled Funds</h3>
+    <p>Funds are allocated into carefully reviewed opportunities.</p>
+
+    <h3>Step 4 — Track Your Investment</h3>
+    <p>Your dashboard shows your contribution and cycle performance.</p>
+
+    <h3>Step 5 — Profit/Loss Sharing</h3>
+    <p>At the end of each cycle, results are shared proportionally.</p>
+
+    <h3>Step 6 — Withdraw or Reinvest</h3>
+    <p>Grow your balance or withdraw to your bank account.</p>
+
+  </div>
+</section>
+
+<!-- ---------- FAQ SECTION ---------- -->
+<section id="faq" class="section gradient">
+  <div class="container">
+    <h2>Frequently Asked Questions</h2>
+
+    <p><strong>What does Ann Investment Company do?</strong><br>
+      We pool investor funds and allocate them into well-selected opportunities.</p>
+
+    <p><strong>Is my money safe?</strong><br>
+      We follow professional, responsible investment practices, but returns are not guaranteed.</p>
+
+    <p><strong>Can I lose money?</strong><br>
+      Yes — as with any real investment, losses are possible.</p>
+
+    <p><strong>How much is the minimum deposit?</strong><br>
+      Minimum opening deposit starts from $20 (or as decided).</p>
+
+    <p><strong>When do I receive profit?</strong><br>
+      At the end of each cycle (monthly or yearly).</p>
+
+  </div>
+</section>
+
+<!-- ---------- CONTACT SECTION ---------- -->
+<section id="contact" class="section">
+  <div class="container">
+    <h2 class="dark-text">Contact Us</h2>
+
+    <p>Have questions? We’d love to hear from you.</p>
+
+    <form>
+      <input type="text" placeholder="Your Name" />
+      <input type="email" placeholder="Your Email" />
+      <textarea placeholder="Your Message" rows="5"></textarea>
+      <button>Send Message</button>
+    </form>
+
+    <h3 class="dark-text" style="margin-top:30px;">Company Details</h3>
+    <p><strong>Email:</strong> support@anninvestments.com</p>
+    <p><strong>Phone:</strong> +1 (xxx) xxx-xxxx</p>
+    <p><strong>Address:</strong> United States (Full address goes here)</p>
+  </div>
+</section>
+
+</body>
+</html>
