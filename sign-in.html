@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In - Ann Investment Company</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(120deg, #5E1010 0%, #FFECCC 100%);
+  color: #5E1010;
+}
+.container {
+  max-width: 500px;
+  margin: 60px auto;
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+.form-header button {
+  background: none;
+  border: none;
+  font-weight: bold;
+  color: #5E1010;
+  font-size: 16px;
+  cursor: pointer;
+}
+.form-header button.active {
+  border-bottom: 3px solid #5E1010;
+  padding-bottom: 4px;
+}
+form {
+  display: flex;
+  flex-direction: column;
+}
+form input, form select, form label {
+  margin-bottom: 15px;
+  box-sizing: border-box;
+}
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form input[type="tel"],
+form input[type="date"],
+form input[type="file"] {
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+  box-sizing: border-box;
+}
+form label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+form button.submit-btn, .form-step button.next-btn, .form-step button.back-btn {
+  background: #5E1010;
+  color: #FFECCC;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+form button.submit-btn:hover, .form-step button.next-btn:hover, .form-step button.back-btn:hover {
+  opacity: 0.9;
+}
+#loginForm {
+  display: none;
+  opacity: 0;
+  transition: all 0.5s ease;
+  flex-direction: column;
+  animation: dropIn 0.5s ease forwards;
+}
+#loginForm.active {
+  display: flex;
+  opacity: 1;
+}
+.form-step {
+  display: none;
+  flex-direction: column;
+  animation: dropIn 0.5s ease forwards;
+}
+.form-step.active {
+  display: flex;
+}
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+#popup {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.popup-content {
+  background: #fff;
+  width: 90%;
+  max-width: 400px;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+  color: #5E1010;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.file-preview {
+  max-width: 100px;
+  margin-top: 5px;
+  border-radius: 6px;
+}
+@media (max-width: 550px) {
+  .container {
+    margin: 30px 20px;
+    padding: 30px 20px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="form-header">
+    <button id="registerBtn" class="active">Register</button>
+    <button id="loginBtn">Login</button>
+  </div>
+
+  <!-- REGISTRATION FORM -->
+  <form id="registerForm">
+    <!-- Section 1: Personal Info -->
+    <div class="form-step active" id="step1">
+      <label for="firstName">First Name</label>
+      <input type="text" id="firstName" required>
+      <label for="lastName">Last Name</label>
+      <input type="text" id="lastName" required>
+      <label for="email">Email</label>
+      <input type="email" id="email" required>
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" required>
+      <label for="dob">Date of Birth</label>
+      <input type="date" id="dob" required>
+      <button type="button" class="next-btn" onclick="nextStep(1)">Continue</button>
+    </div>
+
+    <!-- Section 2: Address -->
+    <div class="form-step" id="step2">
+      <label for="street">Street Address</label>
+      <input type="text" id="street" required>
+      <label for="city">City</label>
+      <input type="text" id="city" required>
+      <label for="state">State</label>
+      <input type="text" id="state" required>
+      <label for="zip">ZIP Code</label>
+      <input type="text" id="zip" required>
+      <label for="password">Password</label>
+      <input type="password" id="password" required>
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" required>
+      <div style="display:flex; justify-content: space-between;">
+        <button type="button" class="next-btn" onclick="nextStep(2)">Continue</button>
+        <button type="button" class="back-btn" onclick="prevStep(2)">Back</button>
+      </div>
+    </div>
+
+    <!-- Section 3: Identity -->
+    <div class="form-step" id="step3">
+      <label>Upload Government ID (Front)</label>
+      <input type="file" id="idFront" accept="image/*" required>
+      <img id="previewFront" class="file-preview" src="" alt="">
+      <label>Upload Government ID (Back)</label>
+      <input type="file" id="idBack" accept="image/*" required>
+      <img id="previewBack" class="file-preview" src="" alt="">
+      <label>Upload Selfie</label>
+      <input type="file" id="selfie" accept="image/*" required>
+      <img id="previewSelfie" class="file-preview" src="" alt="">
+      <div style="display:flex; justify-content: space-between;">
+        <button type="button" class="submit-btn" onclick="submitRegistration()">Register</button>
+        <button type="button" class="back-btn" onclick="prevStep(3)">Back</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- LOGIN FORM -->
+  <form id="loginForm">
+    <label for="loginEmail">Email</label>
+    <input type="email" id="loginEmail" required>
+    <label for="loginPassword">Password</label>
+    <input type="password" id="loginPassword" required>
+    <button type="button" class="submit-btn">Login</button>
+  </form>
+</div>
+
+<!-- SUCCESS POPUP -->
+<div id="popup" class="popup">
+  <div class="popup-content">
+    <h3>Registration Successful!</h3>
+    <p>Your identity is being verified. You will receive a message once verification is complete.</p>
+    <button onclick="closePopup()">Close</button>
+  </div>
+</div>
+
+<script>
+
+// ---------- TOGGLE REGISTER/LOGIN ----------
+registerBtn.addEventListener('click', () => {
+  loginForm.classList.remove('active');
+  registerForm.style.display = 'flex';
+  registerBtn.classList.add('active');
+  loginBtn.classList.remove('active');
+});
+
+loginBtn.addEventListener('click', () => {
+  registerForm.style.display = 'none';
+  loginForm.classList.add('active');
+  loginBtn.classList.add('active');
+  registerBtn.classList.remove('active');
+});
+
+// ---------- MULTI-STEP ----------
+function nextStep(current) {
+  document.getElementById(`step${current}`).classList.remove('active');
+  document.getElementById(`step${current+1}`).classList.add('active');
+}
+function prevStep(current) {
+  document.getElementById(`step${current}`).classList.remove('active');
+  document.getElementById(`step${current-1}`).classList.add('active');
+}
+
+// ---------- PREVIEW UPLOADS ----------
+function previewFile(inputId, previewId) {
+  const input = document.getElementById(inputId);
+  const preview = document.getElementById(previewId);
+
+  input.addEventListener('change', () => {
+    const file = input.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = e => preview.src = e.target.result;
+      reader.readAsDataURL(file);
+    }
+  });
+}
+previewFile('idFront','previewFront');
+previewFile('idBack','previewBack');
+previewFile('selfie','previewSelfie');
+
+
+// =======================================================
+// 🔥 SUBMIT REGISTRATION TO BACKEND
+// =======================================================
+
+async function submitRegistration() {
+
+  // Gather personal info
+  const data = new FormData();
+  data.append("firstName", document.getElementById('firstName').value);
+  data.append("lastName", document.getElementById('lastName').value);
+  data.append("email", document.getElementById('email').value);
+  data.append("phone", document.getElementById('phone').value);
+  data.append("dob", document.getElementById('dob').value);
+
+  data.append("street", document.getElementById('street').value);
+  data.append("city", document.getElementById('city').value);
+  data.append("state", document.getElementById('state').value);
+  data.append("zip", document.getElementById('zip').value);
+
+  const password = document.getElementById('password').value;
+  const confirm = document.getElementById('confirmPassword').value;
+
+  if(password !== confirm){
+    alert("Passwords do not match.");
+    return;
+  }
+
+  data.append("password", password);
+
+  // Add files
+  const idFront = document.getElementById('idFront').files[0];
+  const idBack = document.getElementById('idBack').files[0];
+  const selfie = document.getElementById('selfie').files[0];
+
+  if(!idFront || !idBack || !selfie){
+    alert("Please upload all identity documents.");
+    return;
+  }
+
+  data.append("idFront", idFront);
+  data.append("idBack", idBack);
+  data.append("selfie", selfie);
+
+  try {
+    const res = await fetch("https://investment-9ub4.onrender.com/register", {
+      method: "POST",
+      body: data
+    });
+
+    const result = await res.json();
+
+    if(res.ok){
+      // show your popup
+      document.getElementById('popup').style.display = 'flex';
+    } else {
+      alert(result.message || "Registration failed.");
+    }
+
+  } catch (err) {
+    alert("Network error. Please try again.");
+    console.error(err);
+  }
+}
+
+
+// =======================================================
+// 🔥 LOGIN CONNECTED TO BACKEND
+// =======================================================
+
+document.querySelector('#loginForm button').addEventListener('click', async () => {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  try {
+    const res = await fetch("https://investment-9ub4.onrender.com/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if(res.ok){
+      // Save token for dashboard use
+      localStorage.setItem("token", data.token);
+      alert("Login successful!");
+      // redirect to dashboard (create page soon)
+      window.location.href = "dashboard.html";
+    } else {
+      alert(data.message || "Invalid login.");
+    }
+
+  } catch (err) {
+    alert("Network error.");
+  }
+});
+
+
+// ---------- CLOSE POPUP ----------
+function closePopup() {
+  document.getElementById('popup').style.display = 'none';
+}
+
+</script>
+</body>
+</html>
