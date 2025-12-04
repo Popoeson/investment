@@ -129,6 +129,32 @@ form button.submit-btn:hover, .form-step button.next-btn:hover, .form-step butto
   margin-top: 5px;
   border-radius: 6px;
 }
+
+/* ======= FULL SCREEN LOADING OVERLAY ======= */
+#loadingOverlay {
+  display: none;
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(5px);
+  z-index: 99999;
+  justify-content: center;
+  align-items: center;
+}
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 6px solid white;
+  border-top-color: #5E1010;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0); }
+  100% { transform: rotate(360deg); }
+}
+
 @media (max-width: 550px) {
   .container {
     margin: 30px 20px;
@@ -139,6 +165,11 @@ form button.submit-btn:hover, .form-step button.next-btn:hover, .form-step butto
 </head>
 <body>
 
+<!-- LOADING OVERLAY -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
 <div class="container">
   <div class="form-header">
     <button id="registerBtn" class="active">Register</button>
@@ -147,53 +178,54 @@ form button.submit-btn:hover, .form-step button.next-btn:hover, .form-step butto
 
   <!-- REGISTRATION FORM -->
   <form id="registerForm">
-    <!-- Section 1: Personal Info -->
+    <!-- STEP 1 -->
     <div class="form-step active" id="step1">
-      <label for="firstName">First Name</label>
+      <label>First Name</label>
       <input type="text" id="firstName" required>
-      <label for="lastName">Last Name</label>
+      <label>Last Name</label>
       <input type="text" id="lastName" required>
-      <label for="email">Email</label>
+      <label>Email</label>
       <input type="email" id="email" required>
-      <label for="phone">Phone Number</label>
+      <label>Phone</label>
       <input type="tel" id="phone" required>
-      <label for="dob">Date of Birth</label>
+      <label>Date of Birth</label>
       <input type="date" id="dob" required>
       <button type="button" class="next-btn" onclick="nextStep(1)">Continue</button>
     </div>
 
-    <!-- Section 2: Address -->
+    <!-- STEP 2 -->
     <div class="form-step" id="step2">
-      <label for="street">Street Address</label>
+      <label>Street</label>
       <input type="text" id="street" required>
-      <label for="city">City</label>
+      <label>City</label>
       <input type="text" id="city" required>
-      <label for="state">State</label>
+      <label>State</label>
       <input type="text" id="state" required>
-      <label for="zip">ZIP Code</label>
+      <label>ZIP</label>
       <input type="text" id="zip" required>
-      <label for="password">Password</label>
+      <label>Password</label>
       <input type="password" id="password" required>
-      <label for="confirmPassword">Confirm Password</label>
+      <label>Confirm Password</label>
       <input type="password" id="confirmPassword" required>
-      <div style="display:flex; justify-content: space-between;">
+      <div style="display:flex; justify-content:space-between;">
         <button type="button" class="next-btn" onclick="nextStep(2)">Continue</button>
         <button type="button" class="back-btn" onclick="prevStep(2)">Back</button>
       </div>
     </div>
 
-    <!-- Section 3: Identity -->
+    <!-- STEP 3 -->
     <div class="form-step" id="step3">
-      <label>Upload Government ID (Front)</label>
+      <label>Government ID (Front)</label>
       <input type="file" id="idFront" accept="image/*" required>
-      <img id="previewFront" class="file-preview" src="" alt="">
-      <label>Upload Government ID (Back)</label>
+      <img id="previewFront" class="file-preview">
+      <label>Government ID (Back)</label>
       <input type="file" id="idBack" accept="image/*" required>
-      <img id="previewBack" class="file-preview" src="" alt="">
-      <label>Upload Selfie</label>
+      <img id="previewBack" class="file-preview">
+      <label>Selfie</label>
       <input type="file" id="selfie" accept="image/*" required>
-      <img id="previewSelfie" class="file-preview" src="" alt="">
-      <div style="display:flex; justify-content: space-between;">
+      <img id="previewSelfie" class="file-preview">
+
+      <div style="display:flex; justify-content:space-between;">
         <button type="button" class="submit-btn" onclick="submitRegistration()">Register</button>
         <button type="button" class="back-btn" onclick="prevStep(3)">Back</button>
       </div>
@@ -202,171 +234,142 @@ form button.submit-btn:hover, .form-step button.next-btn:hover, .form-step butto
 
   <!-- LOGIN FORM -->
   <form id="loginForm">
-    <label for="loginEmail">Email</label>
+    <label>Email</label>
     <input type="email" id="loginEmail" required>
-    <label for="loginPassword">Password</label>
+    <label>Password</label>
     <input type="password" id="loginPassword" required>
-    <button type="button" class="submit-btn">Login</button>
+    <button type="button" class="submit-btn" id="loginBtnSubmit">Login</button>
   </form>
 </div>
 
 <!-- SUCCESS POPUP -->
-<div id="popup" class="popup">
+<div id="popup">
   <div class="popup-content">
     <h3>Registration Successful!</h3>
-    <p>Your identity is being verified. You will receive a message once verification is complete.</p>
+    <p>Your identity is being verified. You will be notified soon.</p>
     <button onclick="closePopup()">Close</button>
   </div>
 </div>
 
 <script>
+const backend = "https://investment-9ub4.onrender.com/api";
 
-// ---------- TOGGLE REGISTER/LOGIN ----------
-registerBtn.addEventListener('click', () => {
-  loginForm.classList.remove('active');
-  registerForm.style.display = 'flex';
-  registerBtn.classList.add('active');
-  loginBtn.classList.remove('active');
+// TOGGLE
+registerBtn.onclick = () => {
+  loginForm.classList.remove("active");
+  registerForm.style.display = "flex";
+  registerBtn.classList.add("active");
+  loginBtn.classList.remove("active");
+};
+loginBtn.onclick = () => {
+  registerForm.style.display = "none";
+  loginForm.classList.add("active");
+  loginBtn.classList.add("active");
+  registerBtn.classList.remove("active");
+};
+
+// STEPS
+function nextStep(c){ document.getElementById(`step${c}`).classList.remove("active"); document.getElementById(`step${c+1}`).classList.add("active"); }
+function prevStep(c){ document.getElementById(`step${c}`).classList.remove("active"); document.getElementById(`step${c-1}`).classList.add("active"); }
+
+// PREVIEWS
+["idFront","idBack","selfie"].forEach(id=>{
+  document.getElementById(id).onchange = e=>{
+    const reader = new FileReader();
+    reader.onload = ev=>{
+      document.getElementById("preview"+id.charAt(0).toUpperCase()+id.slice(1)).src = ev.target.result;
+    };
+    reader.readAsDataURL(e.target.files[0]);
+  };
 });
 
-loginBtn.addEventListener('click', () => {
-  registerForm.style.display = 'none';
-  loginForm.classList.add('active');
-  loginBtn.classList.add('active');
-  registerBtn.classList.remove('active');
-});
+// LOADER FUNCTIONS
+function showLoader(){ document.getElementById("loadingOverlay").style.display="flex"; }
+function hideLoader(){ document.getElementById("loadingOverlay").style.display="none"; }
 
-// ---------- MULTI-STEP ----------
-function nextStep(current) {
-  document.getElementById(`step${current}`).classList.remove('active');
-  document.getElementById(`step${current+1}`).classList.add('active');
-}
-function prevStep(current) {
-  document.getElementById(`step${current}`).classList.remove('active');
-  document.getElementById(`step${current-1}`).classList.add('active');
-}
-
-// ---------- PREVIEW UPLOADS ----------
-function previewFile(inputId, previewId) {
-  const input = document.getElementById(inputId);
-  const preview = document.getElementById(previewId);
-
-  input.addEventListener('change', () => {
-    const file = input.files[0];
-    if(file){
-      const reader = new FileReader();
-      reader.onload = e => preview.src = e.target.result;
-      reader.readAsDataURL(file);
-    }
-  });
-}
-previewFile('idFront','previewFront');
-previewFile('idBack','previewBack');
-previewFile('selfie','previewSelfie');
-
-
-// =======================================================
-// 🔥 SUBMIT REGISTRATION TO BACKEND
-// =======================================================
-
+// ========== REGISTRATION ==========
 async function submitRegistration() {
 
-  // Gather personal info
+  showLoader();
+
   const data = new FormData();
-  data.append("firstName", document.getElementById('firstName').value);
-  data.append("lastName", document.getElementById('lastName').value);
-  data.append("email", document.getElementById('email').value);
-  data.append("phone", document.getElementById('phone').value);
-  data.append("dob", document.getElementById('dob').value);
+  data.append("firstName", firstName.value);
+  data.append("lastName", lastName.value);
+  data.append("email", email.value);
+  data.append("phone", phone.value);
+  data.append("dob", dob.value);
+  data.append("street", street.value);
+  data.append("city", city.value);
+  data.append("state", state.value);
+  data.append("zip", zip.value);
 
-  data.append("street", document.getElementById('street').value);
-  data.append("city", document.getElementById('city').value);
-  data.append("state", document.getElementById('state').value);
-  data.append("zip", document.getElementById('zip').value);
-
-  const password = document.getElementById('password').value;
-  const confirm = document.getElementById('confirmPassword').value;
-
-  if(password !== confirm){
-    alert("Passwords do not match.");
+  if(password.value !== confirmPassword.value){
+    hideLoader();
+    alert("Passwords do not match");
     return;
   }
+  data.append("password", password.value);
 
-  data.append("password", password);
-
-  // Add files
-  const idFront = document.getElementById('idFront').files[0];
-  const idBack = document.getElementById('idBack').files[0];
-  const selfie = document.getElementById('selfie').files[0];
-
-  if(!idFront || !idBack || !selfie){
-    alert("Please upload all identity documents.");
-    return;
-  }
-
-  data.append("idFront", idFront);
-  data.append("idBack", idBack);
-  data.append("selfie", selfie);
+  data.append("idFront", idFront.files[0]);
+  data.append("idBack", idBack.files[0]);
+  data.append("selfie", selfie.files[0]);
 
   try {
-    const res = await fetch("https://investment-9ub4.onrender.com/register", {
+    const res = await fetch(`${backend}/register`, {
       method: "POST",
       body: data
     });
 
     const result = await res.json();
 
+    hideLoader();
+
     if(res.ok){
-      // show your popup
-      document.getElementById('popup').style.display = 'flex';
+      popup.style.display = "flex";
     } else {
-      alert(result.message || "Registration failed.");
+      alert(result.message || "Registration failed");
     }
 
-  } catch (err) {
-    alert("Network error. Please try again.");
-    console.error(err);
+  } catch (e){
+    hideLoader();
+    alert("Network error");
   }
 }
 
+// ========== LOGIN ==========
+loginBtnSubmit.onclick = async () => {
 
-// =======================================================
-// 🔥 LOGIN CONNECTED TO BACKEND
-// =======================================================
-
-document.querySelector('#loginForm button').addEventListener('click', async () => {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
+  showLoader();
 
   try {
-    const res = await fetch("https://investment-9ub4.onrender.com/login", {
+    const res = await fetch(`${backend}/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({
+        email: loginEmail.value,
+        password: loginPassword.value
+      })
     });
 
     const data = await res.json();
 
+    hideLoader();
+
     if(res.ok){
-      // Save token for dashboard use
       localStorage.setItem("token", data.token);
-      alert("Login successful!");
-      // redirect to dashboard (create page soon)
       window.location.href = "dashboard.html";
     } else {
-      alert(data.message || "Invalid login.");
+      alert(data.message || "Invalid login");
     }
 
-  } catch (err) {
-    alert("Network error.");
+  } catch(e){
+    hideLoader();
+    alert("Network error");
   }
-});
+};
 
-
-// ---------- CLOSE POPUP ----------
-function closePopup() {
-  document.getElementById('popup').style.display = 'none';
-}
+// CLOSE POPUP
+function closePopup(){ popup.style.display="none"; }
 
 </script>
 </body>
