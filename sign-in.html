@@ -229,6 +229,7 @@ form button.submit-btn:hover, .form-step button.next-btn:hover, .form-step butto
     <button onclick="closePopup()">Close</button>
   </div>
 </div>
+
 <script>
 const backend = "https://investment-9ub4.onrender.com/api";
 
@@ -254,8 +255,14 @@ loginBtn.onclick = () => {
 };
 
 // ---------- STEPS ----------
-function nextStep(c){ document.getElementById(`step${c}`).classList.remove("active"); document.getElementById(`step${c+1}`).classList.add("active"); }
-function prevStep(c){ document.getElementById(`step${c}`).classList.remove("active"); document.getElementById(`step${c-1}`).classList.add("active"); }
+function nextStep(c){
+  document.getElementById(`step${c}`).classList.remove("active");
+  document.getElementById(`step${c+1}`).classList.add("active");
+}
+function prevStep(c){
+  document.getElementById(`step${c}`).classList.remove("active");
+  document.getElementById(`step${c-1}`).classList.add("active");
+}
 
 // ---------- FILE PREVIEWS ----------
 document.addEventListener("DOMContentLoaded", ()=>{
@@ -279,6 +286,18 @@ document.addEventListener("DOMContentLoaded", ()=>{
 // ---------- LOADING ----------
 function showLoader(){ document.getElementById("loadingOverlay").style.display="flex"; }
 function hideLoader(){ document.getElementById("loadingOverlay").style.display="none"; }
+
+// ---------- RESET FORM ----------
+function resetRegistrationForm(){
+  registerForm.reset();
+  ["previewFront","previewBack","previewSelfie"].forEach(id=>{
+    const img = document.getElementById(id);
+    if(img) img.src = "";
+  });
+  // Reset to first step
+  document.querySelectorAll(".form-step").forEach(step=> step.classList.remove("active"));
+  document.getElementById("step1").classList.add("active");
+}
 
 // ---------- REGISTRATION ----------
 async function submitRegistration(){
@@ -314,8 +333,23 @@ async function submitRegistration(){
     const res = await fetch(`${backend}/register`, { method:"POST", body: data });
     const result = await res.json();
     hideLoader();
-    if(res.ok){ popup.style.display="flex"; }
-    else{ alert(result.message || "Registration failed"); }
+
+    if(res.ok){
+      popup.style.display="flex";
+      resetRegistrationForm();
+
+      // Switch to Login form automatically
+      setTimeout(()=>{
+        popup.style.display="none";
+        registerForm.style.display="none";
+        loginForm.classList.add("active");
+        loginBtn.classList.add("active");
+        registerBtn.classList.remove("active");
+      }, 2000); // 2 seconds delay to show popup
+    } else {
+      alert(result.message || "Registration failed");
+    }
+
   } catch(e){
     hideLoader();
     alert("Network error");
@@ -335,6 +369,7 @@ loginBtnSubmit.onclick = async ()=>{
     hideLoader();
     if(res.ok){
       localStorage.setItem("token", data.token);
+      loginForm.reset(); // Reset login form
       window.location.href = "dashboard.html";
     } else { alert(data.message || "Invalid login"); }
   } catch(e){ hideLoader(); alert("Network error"); }
@@ -342,7 +377,6 @@ loginBtnSubmit.onclick = async ()=>{
 
 // ---------- CLOSE POPUP ----------
 function closePopup(){ popup.style.display="none"; }
-
 </script>
 </body>
 </html>
