@@ -94,11 +94,13 @@ next();
 } catch(e){ return res.status(401).json({ message:'Invalid/expired token' }); }
 }
 
-// Admin middleware (for simplicity, you can replace with proper role check)
-function adminMiddleware(req,res,next){
-const adminEmails = [process.env.ADMIN_EMAIL]; // single admin email
-if(!adminEmails.includes(req.user.email)) return res.status(403).json({ message:'Admin access only' });
-next();
+// Admin middleware
+
+function adminMiddleware(req, res, next) {
+  if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
+  if (req.user.role !== 'admin')
+    return res.status(403).json({ message: 'Admin access only' });
+  next();
 }
 
 // --------------------------
@@ -206,52 +208,66 @@ app.post('/api/register', upload.fields([
   }
 });
 
-// Login (plain password for now)
+// --------------------------
+// Universal Login
+// --------------------------
 app.post('/api/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    if (!email || !password) {
+    if (!email || !password)
       return res.status(400).json({ message: 'Missing email or password' });
+
+    // Try User first
+    let user = await User.findOne({ email });
+    if (user && user.password === password) {
+      const token = jwt.sign(
+        { id: user._id, email: user.email, role: 'user' },
+        process.env.JWT_SECRET || 'CHANGE_THIS_SECRET',
+        { expiresIn: '3d' }
+      );
+
+      return res.json({
+        message: 'Login successful',
+        token,
+        user: {
+          id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          verified: user.verified,
+          balance: user.balance || 0,
+          totalDeposit: user.totalDeposit || 0,
+          totalInvestment: user.totalInvestment || 0,
+          totalWithdrawal: user.totalWithdrawal || 0,
+          transactions: user.transactions || [],
+          role: 'user'
+        }
+      });
     }
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+    // Try Admin if not found in User
+    const admin = await Admin.findOne({ email });
+    if (admin && admin.password === password) {
+      const token = jwt.sign(
+        { id: admin._id, email: admin.email, role: 'admin' },
+        process.env.JWT_SECRET || 'CHANGE_THIS_SECRET',
+        { expiresIn: '3d' }
+      );
+
+      return res.json({
+        message: 'Login successful',
+        token,
+        user: {
+          id: admin._id,
+          firstName: admin.firstName,
+          lastName: admin.lastName,
+          email: admin.email,
+          role: 'admin'
+        }
+      });
     }
 
-    if (user.password !== password) {
-      return res.status(400).json({ message: 'Invalid email or password' });
-    }
-
-    // Issue JWT
-    const token = jwt.sign(
-      { id: user._id, email: user.email },
-      process.env.JWT_SECRET || 'CHANGE_THIS_SECRET',
-      { expiresIn: '3d' }
-    );
-
-    // Return ALL dashboard-related data
-    return res.json({
-      message: 'Login successful',
-      token,
-      user: {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        verified: user.verified,
-
-        // ⭐ Dashboard stats
-        balance: user.balance || 0,
-        totalDeposit: user.totalDeposit || 0,
-        totalInvestment: user.totalInvestment || 0,
-        totalWithdrawal: user.totalWithdrawal || 0,
-
-        // ⭐ Transactions list
-        transactions: user.transactions || []
-      }
-    });
+    return res.status(400).json({ message: 'Invalid email or password' });
 
   } catch (err) {
     console.error('Login error:', err);
