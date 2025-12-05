@@ -199,18 +199,30 @@ document.getElementById("saveBtn").onclick = async ()=>{
 };
 
 // VERIFY USER
-document.getElementById("verifyBtn").onclick = async ()=>{
+document.getElementById("verifyBtn").onclick = async () => {
   showLoader();
-  try{
-    const res = await fetch(`${backend}/verify/${currentUserId}`, {
-      method:'POST',
-      headers:{ 'Authorization': `Bearer ${token}` }
+  try {
+    const res = await fetch(`${backend}/users/${currentUserId}/verify`, { 
+      method: 'PATCH',
+      headers: { 'Authorization': `Bearer ${token}` }
     });
+
     const data = await res.json();
     hideLoader();
-    if(res.ok){ alert("User verified"); document.getElementById("modal").style.display="none"; fetchUsers(); }
-    else alert(data.message || "Verification failed");
-  } catch(e){ hideLoader(); alert("Network error"); }
+
+    if (res.ok) {
+      alert("User verified");
+      document.getElementById("modal").style.display = "none";
+      fetchUsers();
+    } else {
+      alert(data.message || "Verification failed");
+    }
+
+  } catch (e) {
+    hideLoader();
+    alert("Network error");
+    console.error(e);
+  }
 };
 
 // FREEZE USER
