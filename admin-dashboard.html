@@ -204,9 +204,11 @@ document.getElementById("saveBtn").onclick = async ()=>{
 document.getElementById("verifyBtn").onclick = async () => {
   showLoader();
   try {
-    const res = await fetch(`https://investment-9ub4.onrender.com/api/users/${userId}`, {
-  headers: { 'Authorization': `Bearer ${token}` }
-});
+    const res = await fetch(`https://investment-9ub4.onrender.com/api/users/${currentUserId}/verify`, {
+      method: 'PATCH', // must be PATCH
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
     const data = await res.json();
     hideLoader();
 
