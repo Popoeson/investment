@@ -33,6 +33,19 @@ useUnifiedTopology: true
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
+// --------------------------
+// Admin schema & model
+// --------------------------
+const adminSchema = new mongoose.Schema({
+  firstName: { type: String, required: true },
+  lastName:  { type: String, required: true },
+  email:     { type: String, required: true, unique: true },
+  password:  { type: String, required: true }, // plain text for now
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Admin = mongoose.model('Admin', adminSchema);
+
 // User Schema
 const userSchema = new mongoose.Schema({
 firstName: { type: String, required: true },
