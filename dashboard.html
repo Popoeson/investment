@@ -158,7 +158,7 @@ async function loadDashboard(){
     minDeposit = user.minDeposit || 0;
     minWithdrawal = user.minWithdrawal || 0;
 
-    document.getElementById("welcomeUser").textContent = `Welcome, ${user.firstName}`;
+     document.getElementById("welcomeUser").textContent = `Welcome, ${user.firstName} ${user.lastName}`;
     document.getElementById("currentBalance").textContent = `$${(user.balance || 0).toLocaleString()}`;
     document.getElementById("totalDeposit").textContent = `$${(user.totalDeposit || 0).toLocaleString()}`;
     document.getElementById("totalInvestment").textContent = `$${(user.totalInvestment || 0).toLocaleString()}`;
