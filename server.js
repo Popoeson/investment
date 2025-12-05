@@ -285,6 +285,30 @@ app.get('/api/me', authMiddleware, async (req, res) => {
 // Admin Routes
 // --------------------------
 
+
+// --------------------------
+// Create Admin
+// --------------------------
+app.post('/api/admin/create', async (req, res) => {
+  try {
+    const { firstName, lastName, email, password } = req.body;
+    if (!firstName || !lastName || !email || !password)
+      return res.status(400).json({ message: 'All fields are required' });
+
+    const existing = await Admin.findOne({ email });
+    if (existing) return res.status(400).json({ message: 'Email already registered' });
+
+    const admin = new Admin({ firstName, lastName, email, password });
+    await admin.save();
+
+    return res.json({ message: 'Admin registered successfully', adminId: admin._id });
+  } catch (err) {
+    console.error('Admin creation error:', err);
+    if (err.code === 11000) return res.status(400).json({ message: 'Email already registered' });
+    return res.status(500).json({ message: 'Failed to create admin', error: err.message });
+  }
+});
+
 // Get all users
 app.get('/api/admin/users', authMiddleware, adminMiddleware, async(req,res)=>{
 try {
