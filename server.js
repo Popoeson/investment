@@ -365,6 +365,26 @@ res.json({ message:'User updated', user });
 } catch(e){ res.status(500).json({ message:'Failed to update user', error:e.message }); }
 });
 
+// --------------------------
+// Verify User (Admin Only)
+// --------------------------
+app.patch('/api/users/:id/verify', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.verified = true;
+    await user.save();
+
+    return res.json({ message: 'User verified successfully', user });
+  } catch (err) {
+    console.error('Verify user error:', err);
+    return res.status(500).json({ message: 'Failed to verify user' });
+  }
+});
+
 // Freeze / unfreeze
 app.patch('/api/admin/user/:id/freeze', authMiddleware, adminMiddleware, async(req,res)=>{
 try{
