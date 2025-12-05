@@ -25,6 +25,35 @@ body { margin: 0; font-family: Arial, sans-serif; background: #FFECCC; color: #5
 .mini-card h4 { margin: 0; font-size: 14px; opacity: 0.8; }
 .mini-card .amount { margin-top: 6px; font-size: 18px; font-weight: bold; }
 
+.hero-section {
+display: flex;
+gap: 15px;
+flex-wrap: nowrap; /* keep the layout on one row /
+overflow-x: auto;  / allow scrolling on small screens /
+padding-bottom: 10px; / for spacing */
+}
+
+/* Balance card /
+.balance-card {
+flex: 0 0 250px; / fixed width */
+min-width: 250px;
+box-sizing: border-box;
+}
+
+/* Mini cards container /
+.mini-cards {
+display: flex;
+flex-wrap: nowrap; / keep mini-cards in a row */
+gap: 10px;
+}
+
+/* Each mini-card /
+.mini-card {
+flex: 0 0 120px; / fixed width */
+min-width: 120px;
+box-sizing: border-box;
+}
+
 /* ACTION BUTTONS */
 .action-buttons { margin: 20px 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-start; }
 .action-buttons button { flex: 1 1 calc(33% - 10px); min-width: 90px; padding: 8px 10px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; color: #fff; font-size: 14px; }
