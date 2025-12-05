@@ -175,60 +175,51 @@ app.post('/api/register', upload.fields([
   }
 });
 
-// Login (plain password)
-app.post('/api/login', async (req, res) => {
+// ---------- LOGIN ----------
+loginBtnSubmit.onclick = async () => {
+  showLoader();
   try {
-    const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ message: 'Missing email or password' });
-
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: 'Invalid email or password' });
-
-    // Plain text compare (INSECURE; replace with bcrypt later)
-    if (user.password !== password) {
-      return res.status(400).json({ message: 'Invalid email or password' });
-    }
-
-    // Issue JWT
-    const token = jwt.sign(
-      { id: user._id, email: user.email },
-      process.env.JWT_SECRET || 'CHANGE_THIS_SECRET',
-      { expiresIn: '3d' }
-    );
-
-    return res.json({
-      message: 'Login successful',
-      token,
-      user: {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        verified: user.verified
-      }
+    const res = await fetch(`${backend}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: loginEmail.value,
+        password: loginPassword.value
+      })
     });
 
-  } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ message: 'Login failed' });
-  }
-});
+    const data = await res.json();
+    hideLoader();
 
-// Simple protected route example (requires token)
-function authMiddleware(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ message: 'Missing authorization header' });
-  const token = authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ message: 'Invalid token format' });
+    if (res.ok) {
+      
+      // ✅ SAVE TOKEN
+      localStorage.setItem("token", data.token);
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'CHANGE_THIS_SECRET');
-    req.user = decoded;
-    next();
-  } catch (err) {
-    return res.status(401).json({ message: 'Invalid or expired token' });
+      // ✅ SAVE FULL USER DATA
+      // (name, email, balance, deposits, withdrawals, transactions)
+      if (data.user) {
+        localStorage.setItem("userData", JSON.stringify(data.user));
+      } else {
+        console.warn("User object missing in backend response");
+      }
+
+      // Clear form
+      loginForm.reset();
+
+      // Redirect to dashboard
+      window.location.href = "dashboard.html";
+
+    } else {
+      alert(data.message || "Invalid login");
+    }
+
+  } catch (e) {
+    hideLoader();
+    alert("Network error");
+    console.error(e);
   }
-}
+};
 
 // Example: get current user info
 app.get('/api/me', authMiddleware, async (req, res) => {
