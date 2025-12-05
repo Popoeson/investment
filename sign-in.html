@@ -357,22 +357,49 @@ async function submitRegistration(){
 }
 
 // ---------- LOGIN ----------
-loginBtnSubmit.onclick = async ()=>{
+loginBtnSubmit.onclick = async () => {
   showLoader();
-  try{
+  try {
     const res = await fetch(`${backend}/login`, {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ email: loginEmail.value, password: loginPassword.value })
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: loginEmail.value,
+        password: loginPassword.value
+      })
     });
+
     const data = await res.json();
     hideLoader();
-    if(res.ok){
+
+    if (res.ok) {
+      
+      // ✅ SAVE TOKEN
       localStorage.setItem("token", data.token);
-      loginForm.reset(); // Reset login form
+
+      // ✅ SAVE FULL USER DATA
+      // (name, email, balance, deposits, withdrawals, transactions)
+      if (data.user) {
+        localStorage.setItem("userData", JSON.stringify(data.user));
+      } else {
+        console.warn("User object missing in backend response");
+      }
+
+      // Clear form
+      loginForm.reset();
+
+      // Redirect to dashboard
       window.location.href = "dashboard.html";
-    } else { alert(data.message || "Invalid login"); }
-  } catch(e){ hideLoader(); alert("Network error"); }
+
+    } else {
+      alert(data.message || "Invalid login");
+    }
+
+  } catch (e) {
+    hideLoader();
+    alert("Network error");
+    console.error(e);
+  }
 };
 
 // ---------- CLOSE POPUP ----------
