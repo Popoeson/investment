@@ -175,51 +175,58 @@ app.post('/api/register', upload.fields([
   }
 });
 
-// ---------- LOGIN ----------
-loginBtnSubmit.onclick = async () => {
-  showLoader();
+// Login (plain password for now)
+app.post('/api/login', async (req, res) => {
   try {
-    const res = await fetch(`${backend}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: loginEmail.value,
-        password: loginPassword.value
-      })
-    });
+    const { email, password } = req.body;
 
-    const data = await res.json();
-    hideLoader();
-
-    if (res.ok) {
-      
-      // ✅ SAVE TOKEN
-      localStorage.setItem("token", data.token);
-
-      // ✅ SAVE FULL USER DATA
-      // (name, email, balance, deposits, withdrawals, transactions)
-      if (data.user) {
-        localStorage.setItem("userData", JSON.stringify(data.user));
-      } else {
-        console.warn("User object missing in backend response");
-      }
-
-      // Clear form
-      loginForm.reset();
-
-      // Redirect to dashboard
-      window.location.href = "dashboard.html";
-
-    } else {
-      alert(data.message || "Invalid login");
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Missing email or password' });
     }
 
-  } catch (e) {
-    hideLoader();
-    alert("Network error");
-    console.error(e);
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    if (user.password !== password) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    // Issue JWT
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET || 'CHANGE_THIS_SECRET',
+      { expiresIn: '3d' }
+    );
+
+    // Return ALL dashboard-related data
+    return res.json({
+      message: 'Login successful',
+      token,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        verified: user.verified,
+
+        // ⭐ Dashboard stats
+        balance: user.balance || 0,
+        totalDeposit: user.totalDeposit || 0,
+        totalInvestment: user.totalInvestment || 0,
+        totalWithdrawal: user.totalWithdrawal || 0,
+
+        // ⭐ Transactions list
+        transactions: user.transactions || []
+      }
+    });
+
+  } catch (err) {
+    console.error('Login error:', err);
+    return res.status(500).json({ message: 'Login failed' });
   }
-};
+});
 
 // Example: get current user info
 app.get('/api/me', authMiddleware, async (req, res) => {
