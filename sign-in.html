@@ -373,12 +373,11 @@ loginBtnSubmit.onclick = async () => {
     hideLoader();
 
     if (res.ok) {
-      
+
       // ✅ SAVE TOKEN
       localStorage.setItem("token", data.token);
 
       // ✅ SAVE FULL USER DATA
-      // (name, email, balance, deposits, withdrawals, transactions)
       if (data.user) {
         localStorage.setItem("userData", JSON.stringify(data.user));
       } else {
@@ -388,8 +387,12 @@ loginBtnSubmit.onclick = async () => {
       // Clear form
       loginForm.reset();
 
-      // Redirect to dashboard
-      window.location.href = "dashboard.html";
+      // ✅ REDIRECT BASED ON ROLE
+      if (data.user.role === 'admin') {
+        window.location.href = "admin-dashboard.html";
+      } else {
+        window.location.href = "dashboard.html";
+      }
 
     } else {
       alert(data.message || "Invalid login");
