@@ -246,6 +246,40 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// GET USER DETAILS 
+
+app.get('/api/me', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Prepare stats for frontend
+    const stats = {
+      currentBalance: user.balance || 0,
+      totalDeposit: user.totalDeposit || 0,
+      totalInvestment: user.totalInvestment || 0,
+      totalWithdrawal: user.totalWithdrawal || 0
+    };
+
+    res.json({
+      user: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        balance: user.balance,
+        totalDeposit: user.totalDeposit,
+        totalInvestment: user.totalInvestment,
+        totalWithdrawal: user.totalWithdrawal,
+        transactions: user.transactions || []
+      },
+      stats
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch user info' });
+  }
+});
+
 
 // --------------------------
 // Admin Routes
