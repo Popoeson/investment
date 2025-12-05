@@ -202,8 +202,8 @@ document.getElementById("saveBtn").onclick = async ()=>{
 document.getElementById("verifyBtn").onclick = async () => {
   showLoader();
   try {
-    const res = await fetch(`${backend}/users/${currentUserId}/verify`, { 
-      method: 'PATCH',
+    const res = await fetch(`${backend}/users/${currentUserId}/verify`, { // <-- correct path
+      method: 'PATCH', // <-- matches backend
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
