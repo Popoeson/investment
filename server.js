@@ -101,6 +101,152 @@ streamifier.createReadStream(buffer).pipe(uploadStream);
 });
 }
 
+
+
+// --------------------------
+// Routes
+// --------------------------
+
+// Health
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+
+// Registration
+// Expects multipart/form-data with fields + files:
+// files named: idFront, idBack, selfie
+app.post('/api/register', upload.fields([
+  { name: 'idFront', maxCount: 1 },
+  { name: 'idBack', maxCount: 1 },
+  { name: 'selfie', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    // Basic form fields
+    const {
+      firstName, lastName, email, phone, dob,
+      street = '', city = '', state = '', zip = '',
+      password
+    } = req.body;
+
+    if (!firstName || !lastName || !email || !phone || !dob || !password) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    // Check if already registered
+    const existing = await User.findOne({ email });
+    if (existing) return res.status(400).json({ message: 'Email already registered' });
+
+    // Upload files to Cloudinary (if present)
+    const files = req.files || {};
+    const uploads = {};
+
+    if (files.idFront && files.idFront[0]) {
+      const f = files.idFront[0];
+      const name = `idFront_${Date.now()}`;
+      const result = await uploadBufferToCloudinary(f.buffer, name);
+      uploads.idFrontUrl = result.secure_url;
+    } else {
+      uploads.idFrontUrl = '';
+    }
+
+    if (files.idBack && files.idBack[0]) {
+      const f = files.idBack[0];
+      const name = `idBack_${Date.now()}`;
+      const result = await uploadBufferToCloudinary(f.buffer, name);
+      uploads.idBackUrl = result.secure_url;
+    } else {
+      uploads.idBackUrl = '';
+    }
+
+    if (files.selfie && files.selfie[0]) {
+      const f = files.selfie[0];
+      const name = `selfie_${Date.now()}`;
+      const result = await uploadBufferToCloudinary(f.buffer, name);
+      uploads.selfieUrl = result.secure_url;
+    } else {
+      uploads.selfieUrl = '';
+    }
+
+    // Create user (password stored as plain text per your instruction)
+    const user = new User({
+      firstName, lastName, email, phone, dob,
+      street, city, state, zip,
+      password,
+      idFrontUrl: uploads.idFrontUrl,
+      idBackUrl: uploads.idBackUrl,
+      selfieUrl: uploads.selfieUrl,
+      verified: false
+    });
+
+    await user.save();
+
+    return res.json({
+      message: 'Registration successful. Identity verification in progress.',
+      userId: user._id
+    });
+
+  } catch (err) {
+    console.error('Registration error:', err);
+    // handle duplicate key error gracefully
+    if (err.code === 11000 && err.keyPattern && err.keyPattern.email) {
+      return res.status(400).json({ message: 'Email already registered' });
+    }
+    return res.status(500).json({ message: 'Registration failed', error: err.message });
+  }
+});
+
+// Login (plain password for now)
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Missing email or password' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    if (user.password !== password) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    // Issue JWT
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET || 'CHANGE_THIS_SECRET',
+      { expiresIn: '3d' }
+    );
+
+    // Return ALL dashboard-related data
+    return res.json({
+      message: 'Login successful',
+      token,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        verified: user.verified,
+
+        // ⭐ Dashboard stats
+        balance: user.balance || 0,
+        totalDeposit: user.totalDeposit || 0,
+        totalInvestment: user.totalInvestment || 0,
+        totalWithdrawal: user.totalWithdrawal || 0,
+
+        // ⭐ Transactions list
+        transactions: user.transactions || []
+      }
+    });
+
+  } catch (err) {
+    console.error('Login error:', err);
+    return res.status(500).json({ message: 'Login failed' });
+  }
+});
+
+
 // --------------------------
 // Admin Routes
 // --------------------------
