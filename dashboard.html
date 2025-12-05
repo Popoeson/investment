@@ -98,7 +98,10 @@ body { margin: 0; font-family: Arial, sans-serif; background: #FFECCC; color: #5
     
   </div>  <!-- TRANSACTION HISTORY -->  <div class="trans-title">Transaction History</div>
   <div class="transaction-list" id="transactionList"></div>
-</div><div id="loadingOverlay"><div class="spinner"></div></div><script>
+</div><div id="loadingOverlay"><div class="spinner"></div></div>
+();
+
+<script>
 const backend = "https://investment-9ub4.onrender.com/api";
 const token = localStorage.getItem("token");
 const adminWhatsApp = "09122054068";
@@ -157,41 +160,47 @@ async function loadDashboard(){
       list.appendChild(div);
     });
 
+    // Attach button handlers AFTER user data is loaded
+    attachActionButtons();
+
   } catch(e){ hideLoader(); alert("Network error"); }
 }
 
-// Deposit button
-document.getElementById("depositBtn").onclick = () => {
-  const amount = prompt(`Minimum deposit is $${minDeposit}. Enter deposit amount:`, minDeposit);
-  if(amount && Number(amount) >= minDeposit){
-    const message = `Hello Admin, I would like to make a deposit of $${amount}. Please assist.`;
-    window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(message)}`, "_blank");
-  } else if(amount) alert(`Deposit must be at least $${minDeposit}`);
-};
+function attachActionButtons(){
+  // Deposit button
+  document.getElementById("depositBtn").onclick = () => {
+    const amount = prompt(`Minimum deposit is $${minDeposit}. Enter deposit amount:`, minDeposit);
+    if(amount && Number(amount) >= minDeposit){
+      const message = `Hello Admin, I would like to make a deposit of $${amount}. Kindly assist.`;
+      window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(message)}`, "_blank");
+    } else if(amount) alert(`Deposit must be at least $${minDeposit}`);
+  };
 
-// Invest button
-document.getElementById("investBtn").onclick = () => {
-  const amount = prompt(`Enter amount you want to invest:`);
-  if(amount && Number(amount) > 0){
-    const message = `Hello Admin, I would like to invest $${amount}. Please assist.`;
-    window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(message)}`, "_blank");
-  }
-};
+  // Invest button
+  document.getElementById("investBtn").onclick = () => {
+    const amount = prompt(`Enter the amount you want to invest:`);
+    if(amount && Number(amount) > 0){
+      const message = `Hello Admin, I would like to invest $${amount}. Kindly assist.`;
+      window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(message)}`, "_blank");
+    }
+  };
 
-// Withdraw button
-document.getElementById("withdrawBtn").onclick = () => {
-  const currentBalance = Number(document.getElementById("currentBalance").textContent.replace(/[^0-9.-]+/g,""));
-  if(currentBalance < minWithdrawal){
-    alert(`Minimum withdrawal amount is $${minWithdrawal}`);
-    return;
-  }
-  const amount = prompt(`Enter withdrawal amount (minimum $${minWithdrawal}):`);
-  if(amount && Number(amount) >= minWithdrawal){
-    const message = `Hello Admin, I would like to withdraw $${amount}. Please assist.`;
-    window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(message)}`, "_blank");
-  } else if(amount) alert(`Withdrawal must be at least $${minWithdrawal}`);
-};
+  // Withdraw button
+  document.getElementById("withdrawBtn").onclick = () => {
+    const currentBalance = Number(document.getElementById("currentBalance").textContent.replace(/[^0-9.-]+/g,""));
+    if(currentBalance < minWithdrawal){
+      alert(`Your balance is below the minimum withdrawal amount of $${minWithdrawal}`);
+      return;
+    }
+    const amount = prompt(`Enter withdrawal amount (minimum $${minWithdrawal}):`);
+    if(amount && Number(amount) >= minWithdrawal){
+      const message = `Hello Admin, I would like to withdraw $${amount}. Kindly assist.`;
+      window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(message)}`, "_blank");
+    } else if(amount) alert(`Withdrawal must be at least $${minWithdrawal}`);
+  };
+}
 
 loadDashboard();
-</script></body>
+</script>
+</body>
 </html>
