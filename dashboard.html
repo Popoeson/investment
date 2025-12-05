@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Dashboard - Ann Investment</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #FFECCC;
+  color: #5E1010;
+}
+
+.dashboard-container {
+  padding: 20px;
+}
+
+/* TOP BAR */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+.top-bar h2 {
+  margin: 0;
+  font-size: 22px;
+}
+.top-bar button {
+  background: #5E1010;
+  color: #FFECCC;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* HERO SECTION */
+.hero-section {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.balance-card {
+  background: #5E1010;
+  color: #FFECCC;
+  padding: 25px;
+  border-radius: 12px;
+  flex: 1;
+  min-width: 250px;
+}
+
+.balance-card h3 {
+  margin: 0;
+  font-size: 18px;
+  opacity: 0.8;
+}
+
+.balance-card .amount {
+  margin-top: 10px;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+/* RIGHT MINI CARDS */
+.mini-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 250px;
+}
+
+.mini-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.mini-card h4 {
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.8;
+}
+.mini-card .amount {
+  margin-top: 6px;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* TRANSACTION SECTION */
+.trans-title {
+  margin-top: 40px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.transaction-list {
+  margin-top: 15px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.transaction-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+}
+
+.transaction-item:last-child {
+  border-bottom: none;
+}
+
+/* COLORS */
+.deposit { color: green; }
+.invest   { color: red; }
+.withdraw { color: blue; }
+
+.date {
+  opacity: 0.7;
+  font-size: 13px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 700px) {
+  .hero-section {
+    flex-direction: column;
+  }
+
+  .mini-cards {
+    width: 100%;
+    flex-direction: row;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="dashboard-container">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <h2 id="welcomeUser">Welcome, User</h2>
+    <button onclick="goToProfile()">Profile</button>
+  </div>
+
+  <!-- HERO SECTION -->
+  <div class="hero-section">
+
+    <!-- CURRENT BALANCE -->
+    <div class="balance-card">
+      <h3>Current Balance</h3>
+      <div class="amount" id="currentBalance">$0.00</div>
+    </div>
+
+    <!-- SMALL CARDS -->
+    <div class="mini-cards">
+      
+      <div class="mini-card">
+        <h4>Total Deposit</h4>
+        <div class="amount" id="totalDeposit">$0.00</div>
+      </div>
+
+      <div class="mini-card">
+        <h4>Total Investment</h4>
+        <div class="amount" id="totalInvestment">$0.00</div>
+      </div>
+
+      <div class="mini-card">
+        <h4>Total Withdrawal</h4>
+        <div class="amount" id="totalWithdrawal">$0.00</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TRANSACTION HISTORY -->
+  <div class="trans-title">Transaction History</div>
+  <div class="transaction-list" id="transactionList">
+    <!-- Auto-filled with JS -->
+  </div>
+
+</div>
+
+<script>
+const backend = "https://investment-9ub4.onrender.com/api";
+const token = localStorage.getItem("token");
+
+if(!token){
+  window.location.href = "sign-in.html";
+}
+
+// Fetch dashboard data
+async function loadDashboard(){
+  try {
+    const res = await fetch(`${backend}/user/dashboard`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    const data = await res.json();
+    if(!res.ok) return alert("Session expired, login again");
+
+    // WELCOME NAME
+    document.getElementById("welcomeUser").textContent = `Welcome, ${data.user.firstName}`;
+
+    // STATS
+    document.getElementById("currentBalance").textContent = `$${data.stats.currentBalance}`;
+    document.getElementById("totalDeposit").textContent = `$${data.stats.totalDeposit}`;
+    document.getElementById("totalInvestment").textContent = `$${data.stats.totalInvestment}`;
+    document.getElementById("totalWithdrawal").textContent = `$${data.stats.totalWithdrawal}`;
+
+    // TRANSACTIONS
+    const list = document.getElementById("transactionList");
+    list.innerHTML = "";
+
+    data.transactions.forEach(t=>{
+      const div = document.createElement("div");
+      div.className = "transaction-item";
+
+      // amount color by type
+      const colorClass =
+        t.type === "deposit" ? "deposit" :
+        t.type === "investment" ? "invest" : "withdraw";
+
+      div.innerHTML = `
+        <span class="${colorClass}">${t.type.toUpperCase()} — $${t.amount}</span>
+        <span class="date">${new Date(t.createdAt).toLocaleString()}</span>
+      `;
+
+      list.appendChild(div);
+    });
+
+  } catch (e) {
+    alert("Network error");
+  }
+}
+
+loadDashboard();
+
+function goToProfile(){
+  window.location.href = "profile.html";
+}
+</script>
+
+</body>
+</html>
