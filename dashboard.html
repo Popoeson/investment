@@ -11,19 +11,17 @@ body { margin: 0; font-family: Arial, sans-serif; background: #FFECCC; color: #5
 .top-bar h2 { margin: 0; font-size: 20px; }
 .top-bar button { background: #5E1010; color: #FFECCC; padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
 
-/* HERO SECTION */
+/* HERO SECTION /
 .hero-section {
 display: flex;
 gap: 15px;
-/*flex-wrap: nowrap; */
-overflow-x: auto;  
-padding-bottom: 10px;
+flex-wrap: wrap; / allow wrapping on small screens */
 }
 
-/* Balance card */
+/* Balance card /
 .balance-card {
-flex: 0 0 250px; 
-min-width: 250px;
+flex: 1 1 40%; / flexible width, will shrink on small screens */
+min-width: 150px;
 background: #5E1010;
 color: #FFECCC;
 padding: 20px;
@@ -33,11 +31,17 @@ box-sizing: border-box;
 .balance-card h3 { margin: 0; font-size: 16px; opacity: 0.8; }
 .balance-card .amount { margin-top: 8px; font-size: 28px; font-weight: bold; }
 
-/* MINI CARDS */
-.mini-cards { display: flex; flex-wrap: nowrap; gap: 10px; }
+/* MINI CARDS /
+.mini-cards {
+display: flex;
+flex: 1 1 55%; / flexible width /
+flex-wrap: wrap;
+gap: 10px;
+min-width: 150px;
+}
 .mini-card {
-flex: 0 0 120px; 
-min-width: 120px;
+flex: 1 1 30%; / shrinkable and flexible */
+min-width: 90px;
 background: white;
 padding: 15px;
 border-radius: 12px;
@@ -49,7 +53,7 @@ box-sizing: border-box;
 
 /* ACTION BUTTONS */
 .action-buttons { margin: 20px 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-start; }
-.action-buttons button { flex: 1 1 calc(33% - 10px); min-width: 90px; padding: 8px 10px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; color: #fff; font-size: 14px; }
+.action-buttons button { flex: 1 1 calc(33% - 10px); min-width: 80px; padding: 8px 10px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; color: #fff; font-size: 14px; }
 .action-buttons .deposit { background: green; }
 .action-buttons .invest { background: red; }
 .action-buttons .withdraw { background: blue; }
@@ -72,6 +76,13 @@ box-sizing: border-box;
 @keyframes spin { 0%{transform:rotate(0);} 100%{transform:rotate(360deg);} }
 
 /* RESPONSIVE ADJUSTMENTS */
+@media (max-width: 700px) {
+.balance-card { flex: 1 1 100%; }
+.mini-cards { flex: 1 1 100%; }
+.mini-card { flex: 1 1 30%; }
+.action-buttons button { flex: 1 1 30%; min-width: 80px; font-size: 13px; }
+}
+
 @media (max-width: 450px) {
 .top-bar { flex-direction: column; gap: 10px; }
 .balance-card .amount { font-size: 24px; }
