@@ -4,138 +4,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Dashboard - Ann Investment Company</title>
 <style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #FFECCC;
-    color: #5E1010;
-  }
-  header {
-    background: #5E1010;
-    color: #FFECCC;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  header h1 {
-    margin: 0;
-    font-size: 24px;
-  }
-  header button {
-    background: #FFECCC;
-    color: #5E1010;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  .container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 20px;
-  }
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-  }
-  .user-card {
-    background: #fff;
-    border: 2px solid #5E1010;
-    border-radius: 12px;
-    padding: 20px;
-    cursor: pointer;
-    transition: transform 0.2s;
-  }
-  .user-card:hover {
-    transform: translateY(-5px);
-  }
-  .user-card h3 {
-    margin: 0 0 10px 0;
-  }
-  .user-card p {
-    margin: 5px 0;
-  }/* Modal */
-#modal {
-display: none;
-position: fixed;
-top:0; left:0; width:100%; height:100%;
-background: rgba(0,0,0,0.6);
-justify-content: center;
-align-items: center;
-z-index: 9999;
-}
-#modal .modal-content {
-background: #fff;
-border-radius: 12px;
-padding: 30px;
-width: 90%;
-max-width: 600px;
-max-height: 90vh;
-overflow-y: auto;
-}
-#modal .modal-content h2 {
-margin-top: 0;
-}
-#modal .modal-content label {
-display: block;
-margin-top: 10px;
-font-weight: bold;
-}
-#modal .modal-content input {
-width: 100%;
-padding: 8px;
-margin-top: 4px;
-border-radius: 6px;
-border: 1px solid #ccc;
-}
-#modal .modal-content button {
-background: #5E1010;
-color: #FFECCC;
-border: none;
-padding: 10px 15px;
-margin-top: 15px;
-border-radius: 6px;
-cursor: pointer;
-font-weight: bold;
-margin-right: 10px;
-}
+  body { margin:0; font-family: Arial,sans-serif; background:#FFECCC; color:#5E1010; }
+  header { background:#5E1010; color:#FFECCC; padding:20px; display:flex; justify-content:space-between; align-items:center; }
+  header h1 { margin:0; font-size:24px; }
+  header button { background:#FFECCC; color:#5E1010; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold; }
+  .container { max-width:1200px; margin:20px auto; padding:0 20px; }
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:20px; }
+  .user-card { background:#fff; border:2px solid #5E1010; border-radius:12px; padding:20px; cursor:pointer; transition:transform 0.2s; }
+  .user-card:hover { transform:translateY(-5px); }
+  .user-card h3 { margin:0 0 10px 0; }
+  .user-card p { margin:5px 0; }/* Modal */
+#modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:9999; }
+#modal .modal-content { background:#fff; border-radius:12px; padding:30px; width:90%; max-width:600px; max-height:90vh; overflow-y:auto; }
+#modal .modal-content h2 { margin-top:0; }
+#modal .modal-content label { display:block; margin-top:10px; font-weight:bold; }
+#modal .modal-content input { width:100%; padding:8px; margin-top:4px; border-radius:6px; border:1px solid #ccc; }
+#modal .modal-content button { background:#5E1010; color:#FFECCC; border:none; padding:10px 15px; margin-top:15px; border-radius:6px; cursor:pointer; font-weight:bold; margin-right:10px; }
+#modal .modal-content button.delete { background:#FF3333; }
+#modal .modal-content button.close { background:#ccc; color:#5E1010; }
 
 /* Loader */
-#loadingOverlay {
-display: none;
-position: fixed;
-top:0; left:0;
-width:100%; height:100%;
-background: rgba(0,0,0,0.5);
-backdrop-filter: blur(5px);
-z-index: 99999;
-justify-content: center;
-align-items: center;
-}
-.spinner {
-width: 60px;
-height: 60px;
-border: 6px solid white;
-border-top-color: #5E1010;
-border-radius: 50%;
-animation: spin 0.9s linear infinite;
-}
-@keyframes spin {
-0% { transform: rotate(0); }
-100% { transform: rotate(360deg); }
-}
-
-@media(max-width:600px){
-header h1 { font-size:20px; }
-#modal .modal-content { padding: 20px; }
-}
+#loadingOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter:blur(5px); z-index:99999; justify-content:center; align-items:center; }
+.spinner { width:60px; height:60px; border:6px solid white; border-top-color:#5E1010; border-radius:50%; animation:spin 0.9s linear infinite; }
+@keyframes spin { 0%{transform:rotate(0);} 100%{transform:rotate(360deg);} }
+@media(max-width:600px){ header h1{font-size:20px;} #modal .modal-content{padding:20px;} }
 </style>
 
 </head>
-<body><header>
+<body>
+<header>
   <h1>Admin Dashboard</h1>
   <button id="logoutBtn">Logout</button>
 </header><div class="container">
@@ -148,47 +45,38 @@ header h1 { font-size:20px; }
     <p><strong>Email:</strong> <span id="modalEmail"></span></p>
     <p><strong>Phone:</strong> <span id="modalPhone"></span></p>
     <p><strong>Verified:</strong> <span id="modalVerified"></span></p>
-    <p><strong>Frozen:</strong> <span id="modalFrozen"></span></p><label>First Name</label>
-<input type="text" id="editFirstName">
-<label>Last Name</label>
-<input type="text" id="editLastName">
-<label>Phone</label>
-<input type="text" id="editPhone">
-
-<label>Current Balance</label>
-<input type="number" id="editBalance">
-
-<label>Add Deposit</label>
-<input type="number" id="addDeposit">
-<label>Add Investment</label>
-<input type="number" id="addInvestment">
-<label>Add Withdrawal</label>
-<input type="number" id="addWithdrawal">
+    <p><strong>Frozen:</strong> <span id="modalFrozen"></span></p><label>First Name</label><input type="text" id="editFirstName">
+<label>Last Name</label><input type="text" id="editLastName">
+<label>Phone</label><input type="text" id="editPhone">
+<label>Balance</label><input type="number" id="editBalance">
+<label>Add Deposit</label><input type="number" id="addDeposit">
+<label>Add Investment</label><input type="number" id="addInvestment">
+<label>Add Withdrawal</label><input type="number" id="addWithdrawal">
 
 <div style="margin-top:15px;">
   <button id="saveBtn">Save Changes</button>
   <button id="verifyBtn">Verify User</button>
   <button id="freezeBtn">Freeze/Unfreeze</button>
-  <button id="deleteBtn" style="background:#FF3333;">Delete</button>
-  <button id="closeModal" style="background:#ccc;color:#5E1010;">Close</button>
+  <button id="deleteBtn" class="delete">Delete</button>
+  <button id="closeModal" class="close">Close</button>
 </div>
 
   </div>
 </div><div id="loadingOverlay"><div class="spinner"></div></div><script>
-const backend = "https://investment-9ub4.onrender.com/api";
+const backend = "https://investment-9ub4.onrender.com/api/admin";
 const token = localStorage.getItem("token"); // Admin JWT token
 
-// ---------- LOGOUT ----------
+// LOGOUT
 document.getElementById("logoutBtn").onclick = () => {
   localStorage.removeItem("token");
   window.location.href = "index.html";
 };
 
-// ---------- LOADER ----------
+// Loader
 function showLoader(){ document.getElementById("loadingOverlay").style.display="flex"; }
 function hideLoader(){ document.getElementById("loadingOverlay").style.display="none"; }
 
-// ---------- FETCH USERS ----------
+// FETCH USERS
 async function fetchUsers(){
   showLoader();
   try{
@@ -197,18 +85,12 @@ async function fetchUsers(){
     });
     const data = await res.json();
     hideLoader();
-    if(res.ok){
-      renderUserCards(data);
-    } else {
-      alert(data.message || "Failed to fetch users");
-    }
-  } catch(e){
-    hideLoader();
-    alert("Network error");
-  }
+    if(res.ok) renderUserCards(data.users);
+    else alert(data.message || "Failed to fetch users");
+  } catch(e){ hideLoader(); alert("Network error"); }
 }
 
-// ---------- RENDER CARDS ----------
+// RENDER CARDS
 function renderUserCards(users){
   const grid = document.getElementById("cardsGrid");
   grid.innerHTML = "";
@@ -226,135 +108,143 @@ function renderUserCards(users){
   });
 }
 
-// ---------- MODAL ----------
+// MODAL
 let currentUserId = null;
 
 async function openModal(userId){
   currentUserId = userId;
   showLoader();
   try{
-    const res = await fetch(`${backend}/users/${userId}`, {
+    const res = await fetch(`${backend}/user/${userId}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const user = await res.json();
     hideLoader();
     if(res.ok){
-      document.getElementById("modalName").innerText = `${user.firstName} ${user.lastName}`;
-      document.getElementById("modalEmail").innerText = user.email;
-      document.getElementById("modalPhone").innerText = user.phone;
-      document.getElementById("modalVerified").innerText = user.verified ? "Yes" : "No";
-      document.getElementById("modalFrozen").innerText = user.frozen ? "Yes" : "No";
+      document.getElementById("modalName").innerText = `${user.user.firstName} ${user.user.lastName}`;
+      document.getElementById("modalEmail").innerText = user.user.email;
+      document.getElementById("modalPhone").innerText = user.user.phone;
+      document.getElementById("modalVerified").innerText = user.user.verified ? "Yes" : "No";
+      document.getElementById("modalFrozen").innerText = user.user.frozen ? "Yes" : "No";
 
-      document.getElementById("editFirstName").value = user.firstName;
-      document.getElementById("editLastName").value = user.lastName;
-      document.getElementById("editPhone").value = user.phone;
-      document.getElementById("editBalance").value = user.balance || 0;
+      document.getElementById("editFirstName").value = user.user.firstName;
+      document.getElementById("editLastName").value = user.user.lastName;
+      document.getElementById("editPhone").value = user.user.phone;
+      document.getElementById("editBalance").value = user.user.balance || 0;
       document.getElementById("addDeposit").value = "";
       document.getElementById("addInvestment").value = "";
       document.getElementById("addWithdrawal").value = "";
 
       document.getElementById("modal").style.display = "flex";
     } else alert(user.message || "Failed to fetch user details");
-  } catch(e){
-    hideLoader();
-    alert("Network error");
-  }
+  } catch(e){ hideLoader(); alert("Network error"); }
 }
 
 document.getElementById("closeModal").onclick = ()=> {
   document.getElementById("modal").style.display = "none";
 };
 
-// ---------- SAVE USER INFO ----------
+// SAVE USER INFO
 document.getElementById("saveBtn").onclick = async ()=>{
-  const payload = {
-    firstName: document.getElementById("editFirstName").value,
-    lastName: document.getElementById("editLastName").value,
-    phone: document.getElementById("editPhone").value,
-    balance: Number(document.getElementById("editBalance").value),
-    addDeposit: Number(document.getElementById("addDeposit").value || 0),
-    addInvestment: Number(document.getElementById("addInvestment").value || 0),
-    addWithdrawal: Number(document.getElementById("addWithdrawal").value || 0)
-  };
   showLoader();
   try{
-    const res = await fetch(`${backend}/users/${currentUserId}`, {
-      method: 'PATCH',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
+    // Update basic info first
+    const updates = {
+      firstName: document.getElementById("editFirstName").value,
+      lastName: document.getElementById("editLastName").value,
+      phone: document.getElementById("editPhone").value,
+      balance: Number(document.getElementById("editBalance").value)
+    };
+    const res1 = await fetch(`${backend}/user/${currentUserId}`, {
+      method:'PUT',
+      headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
+      body: JSON.stringify(updates)
     });
-    const data = await res.json();
+    const data1 = await res1.json();
+    if(!res1.ok) throw new Error(data1.message || "Failed to update user");
+
+    // Add transactions
+    const deposit = Number(document.getElementById("addDeposit").value || 0);
+    const investment = Number(document.getElementById("addInvestment").value || 0);
+    const withdrawal = Number(document.getElementById("addWithdrawal").value || 0);
+
+    if(deposit>0){
+      await fetch(`${backend}/user/${currentUserId}/transactions`, {
+        method:'POST',
+        headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
+        body: JSON.stringify({ type:'deposit', amount:deposit })
+      });
+    }
+    if(investment>0){
+      await fetch(`${backend}/user/${currentUserId}/transactions`, {
+        method:'POST',
+        headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
+        body: JSON.stringify({ type:'investment', amount:investment })
+      });
+    }
+    if(withdrawal>0){
+      await fetch(`${backend}/user/${currentUserId}/transactions`, {
+        method:'POST',
+        headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
+        body: JSON.stringify({ type:'withdrawal', amount:withdrawal })
+      });
+    }
+
     hideLoader();
-    if(res.ok){
-      alert("User updated successfully");
-      document.getElementById("modal").style.display = "none";
-      fetchUsers();
-    } else alert(data.message || "Update failed");
-  } catch(e){
-    hideLoader();
-    alert("Network error");
-  }
+    alert("User updated successfully");
+    document.getElementById("modal").style.display = "none";
+    fetchUsers();
+
+  } catch(e){ hideLoader(); alert(e.message || "Network error"); }
 };
 
-// ---------- VERIFY USER ----------
+// VERIFY USER
 document.getElementById("verifyBtn").onclick = async ()=>{
   showLoader();
   try{
-    const res = await fetch(`${backend}/users/${currentUserId}/verify`, {
-      method: 'PATCH',
-      headers: { 'Authorization': `Bearer ${token}` }
+    const res = await fetch(`${backend}/verify/${currentUserId}`, {
+      method:'POST',
+      headers:{ 'Authorization': `Bearer ${token}` }
     });
     const data = await res.json();
     hideLoader();
-    if(res.ok){
-      alert("User verified");
-      document.getElementById("modal").style.display = "none";
-      fetchUsers();
-    } else alert(data.message || "Verification failed");
+    if(res.ok){ alert("User verified"); document.getElementById("modal").style.display="none"; fetchUsers(); }
+    else alert(data.message || "Verification failed");
   } catch(e){ hideLoader(); alert("Network error"); }
 };
 
-// ---------- FREEZE USER ----------
+// FREEZE USER
 document.getElementById("freezeBtn").onclick = async ()=>{
   showLoader();
   try{
-    const res = await fetch(`${backend}/users/${currentUserId}/freeze`, {
-      method: 'PATCH',
-      headers: { 'Authorization': `Bearer ${token}` }
+    const res = await fetch(`${backend}/user/${currentUserId}/freeze`, {
+      method:'PATCH',
+      headers:{ 'Authorization': `Bearer ${token}` }
     });
     const data = await res.json();
     hideLoader();
-    if(res.ok){
-      alert("User freeze status updated");
-      document.getElementById("modal").style.display = "none";
-      fetchUsers();
-    } else alert(data.message || "Action failed");
+    if(res.ok){ alert("User freeze status updated"); document.getElementById("modal").style.display="none"; fetchUsers(); }
+    else alert(data.message || "Action failed");
   } catch(e){ hideLoader(); alert("Network error"); }
 };
 
-// ---------- DELETE USER ----------
+// DELETE USER
 document.getElementById("deleteBtn").onclick = async ()=>{
   if(!confirm("Are you sure you want to delete this user?")) return;
   showLoader();
   try{
-    const res = await fetch(`${backend}/users/${currentUserId}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
+    const res = await fetch(`${backend}/user/${currentUserId}`, {
+      method:'DELETE',
+      headers:{ 'Authorization': `Bearer ${token}` }
     });
     const data = await res.json();
     hideLoader();
-    if(res.ok){
-      alert("User deleted");
-      document.getElementById("modal").style.display = "none";
-      fetchUsers();
-    } else alert(data.message || "Delete failed");
+    if(res.ok){ alert("User deleted"); document.getElementById("modal").style.display="none"; fetchUsers(); }
+    else alert(data.message || "Delete failed");
   } catch(e){ hideLoader(); alert("Network error"); }
 };
 
-// ---------- INIT ----------
+// INIT
 fetchUsers();
 </script></body>
 </html>
