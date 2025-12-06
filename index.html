@@ -3,61 +3,81 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Ann Investment Company</title>
-
+<title>Chartered Investment Company</title>
 <style>
-
 /* ---------- GLOBAL STYLES ---------- */
-body {
+html, body {
   margin: 0;
   font-family: Arial, sans-serif;
   background: #ffeccc;
   color: #2e2e2e;
   line-height: 1.6;
   scroll-behavior: smooth;
+  overflow-x: hidden; /* prevent horizontal scrolling */
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
 }
 
 h1, h2, h3 {
   color: #5E1010;
+  margin: 0.5em 0;
 }
 
-/* Gradient Section Background */
+.light-heading {
+  color: #FFECCC !important; /* headings on dark backgrounds */
+}
+
+/* Gradient Background */
 .section {
   padding: 80px 20px;
   width: 100%;
 }
 
 .gradient {
-  background: linear-gradient(120deg, #5E1010 0%, #FFECCC 100%);
+  background: linear-gradient(120deg, #5E1010 0%, #3B0A0A 100%);
   color: #fff;
 }
 
-.dark-text {
-  color: #5E1010;
-}
-
-/* ---------- BREADCRUMB NAV ---------- */
+/* ---------- NAVIGATION WITH LOGO ---------- */
 nav {
   position: fixed;
   top: 0;
   width: 100%;
-  background: #5E1010;
-  padding: 12px 20px;
-  z-index: 9999;
+  background: #5E1010cc;
+  backdrop-filter: blur(6px);
+  padding: 10px 20px;
   display: flex;
-  justify-content: center;
-  gap: 20px;
+  align-items: center;
+  gap: 10px;
+  z-index: 10000;
+  flex-wrap: wrap;
 }
 
+/* Logo Image */
+.nav-logo-img {
+  height: 38px;
+  width: auto;
+  margin-right: auto;
+}
+
+/* Breadcrumb Buttons */
 nav a {
-  color: #FFECCC;
+  padding: 6px 14px;
+  background: #FFECCC;
+  color: #5E1010;
+  border-radius: 20px;
+  font-size: 13px;
   text-decoration: none;
   font-weight: bold;
-  font-size: 14px;
+  border: 1px solid #ffffff33;
+  white-space: nowrap;
 }
 
 nav a:hover {
-  text-decoration: underline;
+  background: #fff5dd;
 }
 
 /* ---------- CONTAINER ---------- */
@@ -66,20 +86,34 @@ nav a:hover {
   margin: auto;
 }
 
-/* ---------- HOMEPAGE HERO ---------- */
+/* ---------- HERO GLASSMORPHISM ---------- */
 .hero {
-  padding-top: 120px; /* space under navbar */
+  padding-top: 130px;
+  display: flex;
+  justify-content: center;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 40px 20px;
+  max-width: 780px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   text-align: center;
 }
 
 .hero h1 {
-  font-size: 42px;
+  font-size: 38px;
   font-weight: 800;
+  color: #fff;
 }
 
 .hero p {
-  font-size: 18px;
-  max-width: 700px;
+  font-size: 17px;
+  color: #fff;
+  max-width: 600px;
   margin: 15px auto;
 }
 
@@ -99,7 +133,7 @@ nav a:hover {
   opacity: 0.9;
 }
 
-/* ---------- TESTIMONIALS ---------- */
+/* ---------- TESTIMONIAL ---------- */
 .testimonial {
   background: #fff3e0;
   padding: 15px;
@@ -107,7 +141,7 @@ nav a:hover {
   border-left: 5px solid #5E1010;
 }
 
-/* ---------- CONTACT FORM ---------- */
+/* Contact Form */
 input, textarea {
   width: 100%;
   padding: 12px;
@@ -129,156 +163,140 @@ button:hover {
   opacity: 0.9;
 }
 
-/* ---------- RESPONSIVE ---------- */
+/* Responsive */
 @media (max-width: 700px) {
   nav {
-    flex-wrap: wrap;
-    gap: 10px;
+    justify-content: center;
   }
 
   .hero h1 {
-    font-size: 30px;
+    font-size: 28px;
+  }
+
+  .glass-card {
+    padding: 30px 15px;
+  }
+
+  nav a {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .nav-logo-img {
+    height: 32px;
   }
 }
-
 </style>
 </head>
-
 <body>
-
-<!-- ---------- NAVIGATION / BREADCRUMBS ---------- -->
+<!-- ---------- NAVIGATION WITH LOGO + BUTTON BREADCRUMBS ---------- -->
 <nav>
+  <img src="upload/logo.png" alt="Logo" class="nav-logo-img" />
   <a href="#home">Home</a>
-  <a href="#about">About Us</a>
+  <a href="#about">About</a>
   <a href="#how">How It Works</a>
   <a href="#faq">FAQ</a>
   <a href="#contact">Contact</a>
 </nav>
-
-<!-- ---------- HOME SECTION ---------- -->
+<!-- ---------- HERO SECTION WITH GLASSMORPHISM ---------- -->
 <section id="home" class="section gradient">
   <div class="container hero">
-    <h1>Grow Your Wealth With Smart, Transparent Investments</h1>
-    <p>
-      Ann Investment Company pools investor funds and deploys them into carefully selected opportunities. 
-      At the end of every cycle, profits or losses are shared proportionally — fair, transparent, and efficient.
-    </p>
-    <a href="#how" class="btn">Learn How It Works</a>
-    <a href="sign-in.html" class="btn" style="background:#FFECCC;color:#5E1010;">Start Investing</a>
-  </div>
-</section>
+    <div class="glass-card">
+      <h1>Grow Your Wealth With Smart, Transparent Investments</h1>
+      <p>
+        Chartered Investment Company pools investor funds and deploys them into carefully selected opportunities.
+        At the end of every cycle, profits or losses are shared proportionally —
+        fair, transparent, and efficient.
+      </p>  <a href="#how" class="btn">Learn How It Works</a>
+  <a href="sign-in.html" class="btn" style="background:#FFECCC;color:#5E1010;">Start Investing</a>
+</div>
 
-<!-- ---------- WHY CHOOSE US ---------- -->
+  </div>
+</section><!-- ---------- WHY CHOOSE US ---------- -->
 <section class="section">
   <div class="container">
     <h2 class="dark-text">Why Choose Us?</h2>
-
     <p><strong>✔ Transparent System:</strong> Track your contributions, cycles, and returns in real-time.</p>
     <p><strong>✔ Fair Profit Sharing:</strong> Every investor receives their true percentage share.</p>
     <p><strong>✔ Focus on Safety:</strong> We prioritize low-to-medium risk opportunities.</p>
     <p><strong>✔ US-Based & Fully Compliant:</strong> Professional standards from day one.</p>
-
-    <h3 class="dark-text" style="margin-top:40px;">Testimonials</h3>
-
-    <div class="testimonial">“Easy, modern, and trustworthy investing.” — David O.</div>
-    <div class="testimonial">“I love the transparency and reporting.” — Grace M.</div>
+<h3 class="dark-text" style="margin-top:40px;">Testimonials</h3>
+<div class="testimonial">“Easy, modern, and trustworthy investing.” — David O.</div>
+<div class="testimonial">“I love the transparency and reporting.” — Grace M.</div>
 
   </div>
-</section>
-
-<!-- ---------- ABOUT SECTION ---------- -->
-<section id="about" class="section gradient">
+</section><!-- ---------- ABOUT SECTION ---------- --><section id="about" class="section gradient">
   <div class="container">
-    <h2>About Us</h2>
+    <h2 class="light-heading">About Us</h2>
     <p>
-      Ann Investment Company is a US-based startup dedicated to making investing simple and accessible. 
-      Our model allows everyday individuals to grow their wealth through a pooled investment system 
+      Chartered Investment Company is a US-based startup dedicated to making investing simple and accessible.
+      Our model allows everyday individuals to grow their wealth through a pooled investment system
       backed by transparency and responsible fund management.
-    </p>
+    </p><h3 class="light-heading">Our Mission</h3>
+<p>To make investing easy, safe, and accessible for everyone.</p>
 
-    <h3>Our Mission</h3>
-    <p>To make investing easy, safe, and accessible for everyone.</p>
+<h3 class="light-heading">Our Vision</h3>
+<p>To become one of America’s most trusted investment platforms.</p>
 
-    <h3>Our Vision</h3>
-    <p>To become one of America’s most trusted investment platforms.</p>
+<h3 class="light-heading">Our Values</h3>
+<p><strong>Integrity</strong> — We manage every dollar responsibly.</p>
+<p><strong>Transparency</strong> — Clear reporting, fair sharing.</p>
+<p><strong>Security</strong> — High-standard financial protection.</p>
+<p><strong>Growth</strong> — Steady, realistic, and sustainable returns.</p>
 
-    <h3>Our Values</h3>
-    <p><strong>Integrity</strong> — We manage every dollar responsibly.</p>
-    <p><strong>Transparency</strong> — Clear reporting, fair sharing.</p>
-    <p><strong>Security</strong> — High-standard financial protection.</p>
-    <p><strong>Growth</strong> — Steady, realistic, and sustainable returns.</p>
   </div>
 </section>
-
 <!-- ---------- HOW IT WORKS ---------- -->
 <section id="how" class="section">
   <div class="container">
     <h2 class="dark-text">How It Works</h2>
-
     <h3>Step 1 — Create an Account</h3>
     <p>Register in seconds and access your investor dashboard.</p>
+<h3>Step 2 — Deposit Funds</h3>
+<p>Top up your wallet securely in USD ($).</p>
 
-    <h3>Step 2 — Deposit Funds</h3>
-    <p>Top up your wallet securely in USD ($).</p>
+<h3>Step 3 — We Invest the Pooled Funds</h3>
+<p>Funds are allocated into carefully reviewed opportunities.</p>
 
-    <h3>Step 3 — We Invest the Pooled Funds</h3>
-    <p>Funds are allocated into carefully reviewed opportunities.</p>
+<h3>Step 4 — Track Your Investment</h3>
+<p>Your dashboard shows your contribution and cycle performance.</p>
 
-    <h3>Step 4 — Track Your Investment</h3>
-    <p>Your dashboard shows your contribution and cycle performance.</p>
+<h3>Step 5 — Profit/Loss Sharing</h3>
+<p>At the end of each cycle, results are shared proportionally.</p>
 
-    <h3>Step 5 — Profit/Loss Sharing</h3>
-    <p>At the end of each cycle, results are shared proportionally.</p>
-
-    <h3>Step 6 — Withdraw or Reinvest</h3>
-    <p>Grow your balance or withdraw to your bank account.</p>
+<h3>Step 6 — Withdraw or Reinvest</h3>
+<p>Grow your balance or withdraw to your bank account.</p>
 
   </div>
-</section>
-
-<!-- ---------- FAQ SECTION ---------- -->
+</section><!-- ---------- FAQ ---------- -->
 <section id="faq" class="section gradient">
   <div class="container">
-    <h2>Frequently Asked Questions</h2>
-
-    <p><strong>What does Ann Investment Company do?</strong><br>
-      We pool investor funds and allocate them into well-selected opportunities.</p>
-
-    <p><strong>Is my money safe?</strong><br>
-      We follow professional, responsible investment practices, but returns are not guaranteed.</p>
-
-    <p><strong>Can I lose money?</strong><br>
-      Yes — as with any real investment, losses are possible.</p>
-
-    <p><strong>How much is the minimum deposit?</strong><br>
-      Minimum opening deposit starts from $20 (or as decided).</p>
-
-    <p><strong>When do I receive profit?</strong><br>
-      At the end of each cycle (monthly or yearly).</p>
-
+    <h2 class="light-heading">Frequently Asked Questions</h2>
+    <p><strong>What does Chartered Investment Company do?</strong><br>We pool investor funds into curated opportunities.</p>
+    <p><strong>Is my money safe?</strong><br>We follow responsible investment practice, but returns are not guaranteed.</p>
+    <p><strong>Can I lose money?</strong><br>Yes — as with any real investment.</p>
+    <p><strong>How much is the minimum deposit?</strong><br>Minimum opening deposit is set as per your account strength.</p>
+    <p><strong>When do I receive profit?</strong><br>At the end of each cycle.</p>
   </div>
-</section>
-
-<!-- ---------- CONTACT SECTION ---------- -->
+</section><!-- ---------- CONTACT ---------- -->
 <section id="contact" class="section">
   <div class="container">
     <h2 class="dark-text">Contact Us</h2>
-
     <p>Have questions? We’d love to hear from you.</p>
+<form>
+  <input type="text" placeholder="Your Name" />
+  <input type="email" placeholder="Your Email" />
+  <textarea placeholder="Your Message" rows="5">
+</textarea>
+  <button>Send Message</button>
+</form>
 
-    <form>
-      <input type="text" placeholder="Your Name" />
-      <input type="email" placeholder="Your Email" />
-      <textarea placeholder="Your Message" rows="5"></textarea>
-      <button>Send Message</button>
-    </form>
+<h3 class="dark-text" style="margin-top:30px;">Company Details</h3>
+<p><strong>Email:</strong> cicsupport@gmail.com</p>
+<p><strong>Phone:</strong> +1 (xxx) xxx-xxxx</p>
+<p><strong>Address:</strong> United States (Full address goes here)</p>
 
-    <h3 class="dark-text" style="margin-top:30px;">Company Details</h3>
-    <p><strong>Email:</strong> support@anninvestments.com</p>
-    <p><strong>Phone:</strong> +1 (xxx) xxx-xxxx</p>
-    <p><strong>Address:</strong> United States (Full address goes here)</p>
   </div>
 </section>
-
 </body>
 </html>
