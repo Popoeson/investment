@@ -58,7 +58,7 @@ input {
 }
 
 /* BUTTONS */
-.edit-btn, .save-btn, .cancel-btn {
+.edit-btn, .save-btn, .cancel-btn, .change-pic-btn {
   width: 100%;
   padding: 12px;
   border: none;
@@ -71,6 +71,7 @@ input {
 .edit-btn { background: #5E1010; }
 .save-btn { background: green; display: none; }
 .cancel-btn { background: gray; display: none; }
+.change-pic-btn { background: #5E1010; display: none; }
 
 /* MODAL */
 .modal {
@@ -108,7 +109,7 @@ input {
   z-index: 1000;
 }
 
-/* FIXED / GLASS SIDEBAR */
+/* GLASS SIDEBAR */
 .sidebar {
   width: 250px;
   height: 100%;
@@ -117,29 +118,17 @@ input {
   padding: 20px;
   box-sizing: border-box;
   transition: left 0.3s ease;
-
-  /* GLASS EFFECT */
   background: rgba(94, 16, 16, 0.75);
   backdrop-filter: blur(10px);
-
   color: #FFECCC;
   z-index: 1001;
 }
-
-.sidebar h3 {
-  margin-top: 0;
-}
-
 .sidebar a {
   display: block;
   padding: 12px 0;
   color: #FFECCC;
   text-decoration: none;
-  font-size: 18px;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
 }
-
-.sidebar a:last-child { border-bottom: none; }
 </style>
 </head>
 
@@ -168,10 +157,11 @@ input {
     <!-- Passport -->
     <img id="passportImg" class="profile-pic" src="placeholder.jpg">
 
+    <button class="change-pic-btn" id="changePicBtn">Change Photo</button>
+    <input type="file" id="selfieInput" accept="image/*" style="display:none">
+
     <!-- Verified Status -->
-<div id="verifiedStatus" style="text-align:center; margin-bottom:15px; font-weight:bold;">
-  <!-- JS will populate this -->
-</div>
+    <div id="verifiedStatus" style="text-align:center; margin-bottom:15px; font-weight:bold;"></div>
 
     <!-- Fields -->
     <div class="field-group">
@@ -241,104 +231,104 @@ if(!token) window.location.href = "sign-in.html";
 
 /* SIDEBAR */
 function openSidebar() {
-  document.getElementById("sidebar").style.left = "0";
-  document.getElementById("sidebarOverlay").style.display = "block";
+  sidebar.style.left = "0";
+  sidebarOverlay.style.display = "block";
 }
-
 function closeSidebar() {
-  document.getElementById("sidebar").style.left = "-250px";
-  document.getElementById("sidebarOverlay").style.display = "none";
+  sidebar.style.left = "-250px";
+  sidebarOverlay.style.display = "none";
 }
+sidebarOverlay.addEventListener("click", closeSidebar);
 
-// Only close if user taps OUTSIDE sidebar
-document.getElementById("sidebarOverlay").addEventListener("click", closeSidebar);
-
-/* LOAD USER DATA */
+/* LOAD PROFILE */
 async function loadProfile() {
   const res = await fetch(`${backend}/me`, {
     headers: { "Authorization": `Bearer ${token}` }
   });
 
-  const data = await res.json();
-  const u = data.user;
+  const { user } = await res.json();
 
-  document.getElementById("passportImg").src = u.selfieUrl || "placeholder.jpg";
+  passportImg.src = user.selfieUrl || "placeholder.jpg";
 
-  // Set verified/unverified
-const verifiedDiv = document.getElementById("verifiedStatus");
-if (u.verified) {
-  verifiedDiv.innerHTML = '✅ Verified User';
-  verifiedDiv.style.color = 'green';
-} else {
-  verifiedDiv.innerHTML = '❌ Unverified User';
-  verifiedDiv.style.color = 'red';
+  verifiedStatus.innerHTML = user.verified ? "✅ Verified User" : "❌ Unverified User";
+  verifiedStatus.style.color = user.verified ? "green" : "red";
+
+  firstName.value = user.firstName;
+  lastName.value = user.lastName;
+  dob.value = user.dob ? user.dob.split("T")[0] : "";
+  phone.value = user.phone;
+  email.value = user.email;
+  street.value = user.street;
+  city.value = user.city;
+  state.value = user.state;
+  zip.value = user.zip;
 }
-
-  firstName.value = u.firstName;
-  lastName.value = u.lastName;
-  dob.value = u.dob ? u.dob.split("T")[0] : "";
-  phone.value = u.phone;
-  email.value = u.email;
-  street.value = u.street;
-  city.value = u.city;
-  state.value = u.state;
-  zip.value = u.zip;
-}
-
 loadProfile();
 
-/* EDIT MODE */
-document.getElementById("editBtn").onclick = () => {
+/* ENABLE EDIT MODE */
+editBtn.onclick = () => {
   document.querySelectorAll("input").forEach(i => i.disabled = false);
+  changePicBtn.style.display = "block";
   editBtn.style.display = "none";
   saveBtn.style.display = "block";
   cancelBtn.style.display = "block";
 };
 
 /* CANCEL EDIT */
-document.getElementById("cancelBtn").onclick = () => {
-  location.reload();
+cancelBtn.onclick = () => location.reload();
+
+/* CHANGE PHOTO */
+changePicBtn.onclick = () => selfieInput.click();
+
+selfieInput.onchange = () => {
+  const file = selfieInput.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    passportImg.src = e.target.result; // instant preview
+  };
+  reader.readAsDataURL(file);
 };
 
-/* SAVE CHANGES */
-document.getElementById("saveBtn").onclick = async () => {
+/* SAVE PROFILE */
+saveBtn.onclick = async () => {
 
-  const body = {
-    firstName: firstName.value,
-    lastName: lastName.value,
-    dob: dob.value,
-    phone: phone.value,
-    email: email.value,
-    street: street.value,
-    city: city.value,
-    state: state.value,
-    zip: zip.value
-  };
+  const formData = new FormData();
+  formData.append("firstName", firstName.value);
+  formData.append("lastName", lastName.value);
+  formData.append("dob", dob.value);
+  formData.append("phone", phone.value);
+  formData.append("email", email.value);
+  formData.append("street", street.value);
+  formData.append("city", city.value);
+  formData.append("state", state.value);
+  formData.append("zip", zip.value);
+
+  if (selfieInput.files[0]) {
+    formData.append("selfie", selfieInput.files[0]);
+  }
 
   const res = await fetch(`${backend}/update-profile`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`
     },
-    body: JSON.stringify(body)
+    body: formData
   });
-
-  const result = await res.json();
 
   alert("Profile updated successfully!");
   location.reload();
 };
 
-/* PASSPORT PREVIEW */
-document.getElementById("passportImg").onclick = () => {
-  document.getElementById("previewImg").src =
-    document.getElementById("passportImg").src;
-  document.getElementById("previewModal").style.display = "flex";
+/* PREVIEW PASSPORT */
+passportImg.onclick = () => {
+  previewImg.src = passportImg.src;
+  previewModal.style.display = "flex";
 };
 
 function closeModal(){
-  document.getElementById("previewModal").style.display = "none";
+  previewModal.style.display = "none";
 }
 </script>
 
