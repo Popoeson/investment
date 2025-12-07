@@ -278,21 +278,21 @@ app.post('/api/login', async (req, res) => {
 // GET USER DETAILS 
 app.get('/api/me', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
-
-    const stats = {
-      currentBalance: user.balance || 0,
-      totalDeposit: user.totalDeposit || 0,
-      totalInvestment: user.totalInvestment || 0,
-      totalWithdrawal: user.totalWithdrawal || 0
-    };
 
     res.json({
       user: {
         firstName: user.firstName,
         lastName: user.lastName,
+        dob: user.dob,
+        phone: user.phone,
         email: user.email,
+        street: user.street || '',
+        city: user.city || '',
+        state: user.state || '',
+        zip: user.zip || '',
+        selfieUrl: user.selfieUrl || '',
         balance: user.balance,
         totalDeposit: user.totalDeposit,
         totalInvestment: user.totalInvestment,
@@ -300,8 +300,7 @@ app.get('/api/me', authMiddleware, async (req, res) => {
         transactions: user.transactions || [],
         minDeposit: user.minDeposit,
         minWithdrawal: user.minWithdrawal
-      },
-      stats
+      }
     });
   } catch (err) {
     console.error(err);
