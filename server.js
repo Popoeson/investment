@@ -293,6 +293,7 @@ app.get('/api/me', authMiddleware, async (req, res) => {
         state: user.state || '',
         zip: user.zip || '',
         selfieUrl: user.selfieUrl || '',
+        verified: user.verified, // <-- add this
         balance: user.balance,
         totalDeposit: user.totalDeposit,
         totalInvestment: user.totalInvestment,
