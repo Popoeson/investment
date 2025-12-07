@@ -440,13 +440,14 @@ app.put("/api/update-profile", authMiddleware, async (req, res) => {
       "street",
       "city",
       "state",
-      "zip"
+      "zip",
+      "selfie"   // <-- IMPORTANT: allow selfie updates
     ];
 
     const updates = {};
 
     allowedFields.forEach(field => {
-      if (req.body[field] !== undefined) {
+      if (req.body[field] !== undefined && req.body[field] !== "") {
         updates[field] = req.body[field];
       }
     });
@@ -461,14 +462,14 @@ app.put("/api/update-profile", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({
+    return res.json({
       message: "Profile updated successfully",
       user: updatedUser
     });
 
   } catch (err) {
     console.error("Update profile error:", err);
-    res.status(500).json({ message: "Failed to update profile" });
+    return res.status(500).json({ message: "Failed to update profile" });
   }
 });
 
