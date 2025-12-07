@@ -428,7 +428,7 @@ res.json({ message:'User deleted' });
 
 // UPDATE PROFILE //
 
-app.put("/update-profile", authenticateUser, async (req, res) => {
+app.put("/update-profile", authMiddleware, async (req, res) => {
   try {
     const allowedFields = [
       "firstName",
