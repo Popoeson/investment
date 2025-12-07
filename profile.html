@@ -168,6 +168,11 @@ input {
     <!-- Passport -->
     <img id="passportImg" class="profile-pic" src="placeholder.jpg">
 
+    <!-- Verified Status -->
+<div id="verifiedStatus" style="text-align:center; margin-bottom:15px; font-weight:bold;">
+  <!-- JS will populate this -->
+</div>
+
     <!-- Fields -->
     <div class="field-group">
       <label>First Name</label>
@@ -258,6 +263,16 @@ async function loadProfile() {
   const u = data.user;
 
   document.getElementById("passportImg").src = u.selfieUrl || "placeholder.jpg";
+
+  // Set verified/unverified
+const verifiedDiv = document.getElementById("verifiedStatus");
+if (u.verified) {
+  verifiedDiv.innerHTML = '✅ Verified User';
+  verifiedDiv.style.color = 'green';
+} else {
+  verifiedDiv.innerHTML = '❌ Unverified User';
+  verifiedDiv.style.color = 'red';
+}
 
   firstName.value = u.firstName;
   lastName.value = u.lastName;
