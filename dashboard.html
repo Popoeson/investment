@@ -1,217 +1,343 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>User Dashboard - Ann Investment</title>
+
 <style>
 /* GENERAL */
-body { margin: 0; font-family: Arial, sans-serif; background: #FFECCC; color: #5E1010; }
-.dashboard-container { padding: 15px; max-width: 100%; box-sizing: border-box; }/* TOP BAR */
-.top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+body { margin: 0; font-family: Arial, sans-serif; background: #FFECCC; color: #5E1010; overflow-x: hidden; }
+.dashboard-container { padding: 15px; max-width: 100%; box-sizing: border-box; }
+
+/* TOP BAR */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
 .top-bar h2 { margin: 0; font-size: 20px; }
-.top-bar button { background: #5E1010; color: #FFECCC; padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+
+/* HAMBURGER ICON */
+.menu-icon {
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* SIDEBAR */
+.sidebar-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  z-index: 999;
+}
+.sidebar {
+  width: 250px;
+  height: 100%;
+  background: #5E1010;
+  color: #FFECCC;
+  position: fixed;
+  top: 0; left: -250px;
+  padding: 20px;
+  box-sizing: border-box;
+  transition: left 0.3s ease;
+}
+.sidebar h3 { margin-top: 0; }
+.sidebar a {
+  display: block;
+  padding: 12px 0;
+  color: #FFECCC;
+  text-decoration: none;
+  font-size: 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+.sidebar a:last-child { border-bottom: none; }
 
 /* HERO SECTION */
-.hero-section {
-display: flex;
-gap: 15px;
-flex-wrap: wrap; 
-}
+.hero-section { display: flex; gap: 15px; flex-wrap: wrap; }
 
 /* Balance card */
 .balance-card {
-flex: 1 1 40%; 
-min-width: 150px;
-background: #5E1010;
-color: #FFECCC;
-padding: 20px;
-border-radius: 12px;
-box-sizing: border-box;
+  flex: 1 1 40%; 
+  min-width: 150px;
+  background: #5E1010;
+  color: #FFECCC;
+  padding: 20px;
+  border-radius: 12px;
 }
 .balance-card h3 { margin: 0; font-size: 16px; opacity: 0.8; }
 .balance-card .amount { margin-top: 8px; font-size: 28px; font-weight: bold; }
 
 /* MINI CARDS */
-.mini-cards {
-display: flex;
-flex: 1 1 55%; 
-flex-wrap: wrap;
-gap: 10px;
-min-width: 150px;
-}
+.mini-cards { display: flex; flex: 1 1 55%; flex-wrap: wrap; gap: 10px; }
 .mini-card {
-flex: 1 1 30%; 
-min-width: 90px;
-background: white;
-padding: 15px;
-border-radius: 12px;
-box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-box-sizing: border-box;
+  flex: 1 1 30%;
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 .mini-card h4 { margin: 0; font-size: 14px; opacity: 0.8; }
 .mini-card .amount { margin-top: 6px; font-size: 18px; font-weight: bold; }
 
 /* ACTION BUTTONS */
-.action-buttons { margin: 20px 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-start; }
-.action-buttons button { flex: 1 1 calc(33% - 10px); min-width: 80px; padding: 8px 10px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; color: #fff; font-size: 14px; }
-.action-buttons .deposit { background: green; }
-.action-buttons .invest { background: red; }
-.action-buttons .withdraw { background: blue; }
+.action-buttons {
+  margin: 20px 0;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.action-buttons button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  color: #fff;
+}
+.deposit { background: green; }
+.invest { background: red; }
+.withdraw { background: blue; }
 
 /* TRANSACTION SECTION */
 .trans-title { margin-top: 25px; font-size: 18px; font-weight: bold; }
-.transaction-list { margin-top: 10px; background: #fff; padding: 10px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow-x: auto; }
-.transaction-item { padding: 10px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 14px; flex-wrap: wrap; }
+.transaction-list {
+  margin-top: 10px;
+  background: #fff;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.transaction-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
 .transaction-item:last-child { border-bottom: none; }
 .date { opacity: 0.7; font-size: 12px; }
 
-/* COLORS */
-.deposit { color: green; }
-.invest { color: red; }
-.withdraw { color: blue; }
-
 /* LOADER */
-#loadingOverlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; }
-.spinner { width: 50px; height: 50px; border: 5px solid white; border-top-color: #5E1010; border-radius: 50%; animation: spin 0.9s linear infinite; }
-@keyframes spin { 0%{transform:rotate(0);} 100%{transform:rotate(360deg);} }
-
-/* RESPONSIVE ADJUSTMENTS */
-@media (max-width: 700px) {
-.balance-card { flex: 1 1 100%; }
-.mini-cards { flex: 1 1 100%; }
-.mini-card { flex: 1 1 30%; }
-.action-buttons button { flex: 1 1 30%; min-width: 80px; font-size: 13px; }
+#loadingOverlay {
+  display: none;
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+  z-index: 9999; justify-content: center; align-items: center;
 }
-
-@media (max-width: 450px) {
-.top-bar { flex-direction: column; gap: 10px; }
-.balance-card .amount { font-size: 24px; }
-.mini-card .amount { font-size: 16px; }
-.action-buttons button { flex: 1 1 100%; min-width: auto; font-size: 13px; }
+.spinner {
+  width: 50px; height: 50px;
+  border: 5px solid white;
+  border-top-color: #5E1010;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
 }
+@keyframes spin { to { transform: rotate(360deg);} }
 </style>
-
 </head>
+
 <body>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <h3>Menu</h3>
+  <a href="profile.html">Profile</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+
 <div class="dashboard-container">
+
   <!-- TOP BAR -->
   <div class="top-bar">
     <h2 id="welcomeUser">Welcome, User</h2>
-    <button onclick="logout()">Logout</button>
-  </div>  <!-- HERO SECTION -->  <div class="hero-section">
-    <!-- CURRENT BALANCE -->
-    <div class="balance-card">
-      <h3>Current Balance</h3>
-      <div class="amount" id="currentBalance">$0.00</div>
-    </div><!-- MINI CARDS -->
-<div class="mini-cards">
-  <div class="mini-card">
-    <h4>Total Deposit</h4>
-    <div class="amount" id="totalDeposit">$0.00</div>
+    <div class="menu-icon" onclick="openSidebar()">☰</div>
   </div>
-  <div class="mini-card">
-    <h4>Total Investment</h4>
-    <div class="amount" id="totalInvestment">$0.00</div>
-  </div>
-  <div class="mini-card">
-    <h4>Total Withdrawal</h4>
-    <div class="amount" id="totalWithdrawal">$0.00</div>
-  </div>
-</div>
 
-  </div>  <!-- ACTION BUTTONS -->  <div class="action-buttons">
+  <!-- HERO SECTION -->
+  <!-- (unchanged — same as your original code) -->
+  <!-- #################################################### -->
+  <div class="hero-section">
+      <div class="balance-card">
+          <h3>Current Balance</h3>
+          <div class="amount" id="currentBalance">$0.00</div>
+      </div>
+
+      <div class="mini-cards">
+          <div class="mini-card">
+              <h4>Total Deposit</h4>
+              <div class="amount" id="totalDeposit">$0.00</div>
+          </div>
+          <div class="mini-card">
+              <h4>Total Investment</h4>
+              <div class="amount" id="totalInvestment">$0.00</div>
+          </div>
+          <div class="mini-card">
+              <h4>Total Withdrawal</h4>
+              <div class="amount" id="totalWithdrawal">$0.00</div>
+          </div>
+      </div>
+  </div>
+  <!-- #################################################### -->
+
+  <!-- ACTION BUTTONS -->
+  <div class="action-buttons">
     <button class="deposit" id="depositBtn">Deposit</button>
     <button class="invest" id="investBtn">Invest</button>
     <button class="withdraw" id="withdrawBtn">Withdraw</button>
-  </div>  <!-- TRANSACTION HISTORY -->  <div class="trans-title">Transaction History</div>
+  </div>
+
+  <div class="trans-title">Transaction History</div>
   <div class="transaction-list" id="transactionList"></div>
-</div><div id="loadingOverlay"><div class="spinner"></div></div><script>
+
+</div>
+
+<div id="loadingOverlay"><div class="spinner"></div></div>
+
+<script>
+/* BACKEND CONFIG */
 const backend = "https://investment-9ub4.onrender.com/api";
 const token = localStorage.getItem("token");
 const adminWhatsApp = "09122054068";
 
-// Redirect if no token
+/* REDIRECT IF NOT LOGGED IN */
 if(!token) window.location.href = "sign-in.html";
 
-// Loader
+/* SIDEBAR FUNCTIONS */
+function openSidebar() {
+  document.getElementById("sidebar").style.left = "0px";
+  document.getElementById("sidebarOverlay").style.display = "block";
+}
+function closeSidebar() {
+  document.getElementById("sidebar").style.left = "-250px";
+  document.getElementById("sidebarOverlay").style.display = "none";
+}
+document.getElementById("sidebarOverlay").onclick = closeSidebar;
+
+/* LOGOUT */
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href = "sign-in.html";
+}
+
+/* LOADER */
 function showLoader(){ document.getElementById("loadingOverlay").style.display="flex"; }
 function hideLoader(){ document.getElementById("loadingOverlay").style.display="none"; }
 
-// Logout
-function logout(){ localStorage.removeItem("token"); window.location.href = "sign-in.html"; }
-
+/* USER DATA */
 let minDeposit = 0;
 let minWithdrawal = 0;
 
 async function loadDashboard(){
   showLoader();
-  try{
-    const res = await fetch(`${backend}/me`, { headers: { "Authorization": `Bearer ${token}` } });
+  try {
+    const res = await fetch(`${backend}/me`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
     const data = await res.json();
     hideLoader();
 
-    if(res.status === 401){ alert("Session expired. Please login again."); logout(); return; }
-    if(!res.ok) return alert(data.message || "Failed to load dashboard");
+    if(res.status === 401){
+      alert("Session expired. Please login again.");
+      logout();
+      return;
+    }
 
     const user = data.user;
 
     minDeposit = user.minDeposit || 0;
     minWithdrawal = user.minWithdrawal || 0;
 
-     document.getElementById("welcomeUser").textContent = `Welcome, ${user.firstName} ${user.lastName}`;
-    document.getElementById("currentBalance").textContent = `$${(user.balance || 0).toLocaleString()}`;
-    document.getElementById("totalDeposit").textContent = `$${(user.totalDeposit || 0).toLocaleString()}`;
-    document.getElementById("totalInvestment").textContent = `$${(user.totalInvestment || 0).toLocaleString()}`;
-    document.getElementById("totalWithdrawal").textContent = `$${(user.totalWithdrawal || 0).toLocaleString()}`;
+    document.getElementById("welcomeUser").textContent =
+      `Welcome, ${user.firstName} ${user.lastName}`;
+
+    document.getElementById("currentBalance").textContent =
+      `$${(user.balance || 0).toLocaleString()}`;
+
+    document.getElementById("totalDeposit").textContent =
+      `$${(user.totalDeposit || 0).toLocaleString()}`;
+
+    document.getElementById("totalInvestment").textContent =
+      `$${(user.totalInvestment || 0).toLocaleString()}`;
+
+    document.getElementById("totalWithdrawal").textContent =
+      `$${(user.totalWithdrawal || 0).toLocaleString()}`;
 
     const list = document.getElementById("transactionList");
     list.innerHTML = "";
-    (user.transactions || []).forEach(t=>{
+
+    (user.transactions || []).forEach(t => {
       const div = document.createElement("div");
       div.className = "transaction-item";
-      const colorClass = t.type === "deposit" ? "deposit" : t.type === "investment" ? "invest" : "withdraw";
+
+      const colorClass =
+        t.type === "deposit" ? "deposit" :
+        t.type === "investment" ? "invest" : "withdraw";
+
       div.innerHTML = `
-        <span class="${colorClass}">${t.type.toUpperCase()} — $${t.amount.toLocaleString()}</span>
+        <span class="${colorClass}">
+          ${t.type.toUpperCase()} — $${t.amount.toLocaleString()}
+        </span>
         <span class="date">${new Date(t.date || t.createdAt).toLocaleString()}</span>
       `;
       list.appendChild(div);
     });
 
     attachActionButtons();
-  } catch(e){ hideLoader(); alert("Network error"); }
+  }
+  catch (e) {
+    hideLoader();
+    alert("Network error");
+  }
 }
 
 function attachActionButtons(){
   document.getElementById("depositBtn").onclick = () => {
     const amount = prompt(`Minimum deposit is $${minDeposit}. Enter deposit amount:`, minDeposit);
     if(amount && Number(amount) >= minDeposit){
-      const message = `Hello Admin, I would like to make a deposit of $${amount}. Kindly assist.`;
-      window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(message)}`, "_blank");
-    } else if(amount) alert(`Deposit must be at least $${minDeposit}`);
+      const msg = `Hello Admin, I want to deposit $${amount}.`;
+      window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(msg)}`);
+    }
   };
 
   document.getElementById("investBtn").onclick = () => {
-    const amount = prompt(`Enter the amount you want to invest:`);
-    if(amount && Number(amount) > 0){
-      const message = `Hello Admin, I would like to invest $${amount}. Kindly assist.`;
-      window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(message)}`, "_blank");
+    const amount = prompt("Enter investment amount:");
+    if(amount){
+      const msg = `Hello Admin, I want to invest $${amount}.`;
+      window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(msg)}`);
     }
   };
 
   document.getElementById("withdrawBtn").onclick = () => {
-    const currentBalance = Number(document.getElementById("currentBalance").textContent.replace(/[^0-9.-]+/g,""));
+    const currentBalance = Number(
+      document.getElementById("currentBalance").textContent.replace(/[^0-9.-]/g,"")
+    );
+
     if(currentBalance < minWithdrawal){
-      alert(`Your balance is below the minimum withdrawal amount of $${minWithdrawal}`);
+      alert(`Your balance is below minimum withdrawal amount: $${minWithdrawal}`);
       return;
     }
+
     const amount = prompt(`Enter withdrawal amount (minimum $${minWithdrawal}):`);
+
     if(amount && Number(amount) >= minWithdrawal){
-      const message = `Hello Admin, I would like to withdraw $${amount}. Kindly assist.`;
-      window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(message)}`, "_blank");
-    } else if(amount) alert(`Withdrawal must be at least $${minWithdrawal}`);
+      const msg = `Hello Admin, I want to withdraw $${amount}.`;
+      window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(msg)}`);
+    }
   };
 }
 
 loadDashboard();
-</script></body>
+</script>
+
+</body>
 </html>
