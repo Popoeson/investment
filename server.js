@@ -426,6 +426,48 @@ res.json({ message:'User deleted' });
 } catch(e){ res.status(500).json({ message:'Failed to delete user', error:e.message }); }
 });
 
+// UPDATE PROFILE //
+
+app.put("/update-profile", authenticateUser, async (req, res) => {
+  try {
+    const allowedFields = [
+      "firstName",
+      "lastName",
+      "dob",
+      "phone",
+      "email",
+      "street",
+      "city",
+      "state",
+      "zip",
+      "passport"
+    ];
+
+    const updates = {};
+
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        updates[field] = req.body[field];
+      }
+    });
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { $set: updates },
+      { new: true }
+    );
+
+    res.json({
+      message: "Profile updated successfully",
+      user: updatedUser
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error updating profile" });
+  }
+});
+
 // --------------------------
 // Start server
 // --------------------------
