@@ -426,9 +426,10 @@ res.json({ message:'User deleted' });
 } catch(e){ res.status(500).json({ message:'Failed to delete user', error:e.message }); }
 });
 
-// UPDATE PROFILE //
-
-app.put("/update-profile", authMiddleware, async (req, res) => {
+// ==========================================
+// UPDATE PROFILE (User Only)
+// ==========================================
+app.put("/api/update-profile", authMiddleware, async (req, res) => {
   try {
     const allowedFields = [
       "firstName",
@@ -439,8 +440,7 @@ app.put("/update-profile", authMiddleware, async (req, res) => {
       "street",
       "city",
       "state",
-      "zip",
-      "passport"
+      "zip"
     ];
 
     const updates = {};
@@ -455,7 +455,11 @@ app.put("/update-profile", authMiddleware, async (req, res) => {
       req.user.id,
       { $set: updates },
       { new: true }
-    );
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     res.json({
       message: "Profile updated successfully",
@@ -463,8 +467,8 @@ app.put("/update-profile", authMiddleware, async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error updating profile" });
+    console.error("Update profile error:", err);
+    res.status(500).json({ message: "Failed to update profile" });
   }
 });
 
