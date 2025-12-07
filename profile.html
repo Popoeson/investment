@@ -257,7 +257,7 @@ async function loadProfile() {
   const data = await res.json();
   const u = data.user;
 
-  document.getElementById("passportImg").src = u.passport || "placeholder.jpg";
+  document.getElementById("passportImg").src = u.selfieUrl || "placeholder.jpg";
 
   firstName.value = u.firstName;
   lastName.value = u.lastName;
