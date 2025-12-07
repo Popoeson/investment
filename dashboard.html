@@ -61,19 +61,18 @@ body { margin: 0; font-family: Arial, sans-serif; background: #FFECCC; color: #5
 /* HERO SECTION */
 .hero-section { display: flex; gap: 15px; flex-wrap: wrap; }
 
-/* Balance card */
+/* LIGHTER HERO BACKGROUND FOR READABILITY */
 .balance-card {
-  flex: 1 1 40%; 
+  flex: 1 1 40%;
   min-width: 150px;
-  background: #5E1010;
+  background: #7A1A1A; /* lighter than #5E1010 */
   color: #FFECCC;
   padding: 20px;
   border-radius: 12px;
 }
-.balance-card h3 { margin: 0; font-size: 16px; opacity: 0.8; }
+.balance-card h3 { margin: 0; font-size: 16px; opacity: 0.85; }
 .balance-card .amount { margin-top: 8px; font-size: 28px; font-weight: bold; }
 
-/* MINI CARDS */
 .mini-cards { display: flex; flex: 1 1 55%; flex-wrap: wrap; gap: 10px; }
 .mini-card {
   flex: 1 1 30%;
@@ -101,9 +100,15 @@ body { margin: 0; font-family: Arial, sans-serif; background: #FFECCC; color: #5
   font-weight: bold;
   color: #fff;
 }
+
 .deposit { background: green; }
 .invest { background: red; }
 .withdraw { background: blue; }
+
+/* TRANSACTION COLORS — TEXT ONLY (NO HIGHLIGHT) */
+.text-deposit { color: green; font-weight: bold; }
+.text-invest { color: red; font-weight: bold; }
+.text-withdraw { color: blue; font-weight: bold; }
 
 /* TRANSACTION SECTION */
 .trans-title { margin-top: 25px; font-size: 18px; font-weight: bold; }
@@ -163,8 +168,6 @@ body { margin: 0; font-family: Arial, sans-serif; background: #FFECCC; color: #5
   </div>
 
   <!-- HERO SECTION -->
-  <!-- (unchanged — same as your original code) -->
-  <!-- #################################################### -->
   <div class="hero-section">
       <div class="balance-card">
           <h3>Current Balance</h3>
@@ -186,7 +189,6 @@ body { margin: 0; font-family: Arial, sans-serif; background: #FFECCC; color: #5
           </div>
       </div>
   </div>
-  <!-- #################################################### -->
 
   <!-- ACTION BUTTONS -->
   <div class="action-buttons">
@@ -211,7 +213,7 @@ const adminWhatsApp = "09122054068";
 /* REDIRECT IF NOT LOGGED IN */
 if(!token) window.location.href = "sign-in.html";
 
-/* SIDEBAR FUNCTIONS */
+/* SIDEBAR */
 function openSidebar() {
   document.getElementById("sidebar").style.left = "0px";
   document.getElementById("sidebarOverlay").style.display = "block";
@@ -280,8 +282,9 @@ async function loadDashboard(){
       div.className = "transaction-item";
 
       const colorClass =
-        t.type === "deposit" ? "deposit" :
-        t.type === "investment" ? "invest" : "withdraw";
+        t.type === "deposit" ? "text-deposit" :
+        t.type === "investment" ? "text-invest" :
+        "text-withdraw";
 
       div.innerHTML = `
         <span class="${colorClass}">
@@ -338,6 +341,5 @@ function attachActionButtons(){
 
 loadDashboard();
 </script>
-
 </body>
 </html>
