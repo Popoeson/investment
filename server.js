@@ -71,7 +71,7 @@ minDeposit: { type: Number, default: 0 },
 minWithdrawal: { type: Number, default: 0 },
 
 transactions: [{
-type: { type: String, enum: ["deposit","investment","withdrawal"] },
+type: { type: String, enum: ["deposit","investment","withdrawal", "profit"] },
 amount: Number,
 date: { type: Date, default: Date.now }
 }],
