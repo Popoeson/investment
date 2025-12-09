@@ -54,6 +54,7 @@
 <label>Add Deposit</label><input type="number" id="addDeposit">
 <label>Add Investment</label><input type="number" id="addInvestment">
 <label>Add Withdrawal</label><input type="number" id="addWithdrawal">
+<label>Add Profit</label><input type="number" id="addProfit">
 
 <div style="margin-top:15px;">
   <button id="saveBtn">Save Changes</button>
@@ -141,6 +142,8 @@ document.getElementById("editMinWithdrawal").value = user.user.minWithdrawal || 
       document.getElementById("addInvestment").value = "";
       document.getElementById("addWithdrawal").value = "";
 
+document.getElementById("addProfit").value = "";
+
       document.getElementById("modal").style.display = "flex";
     } else alert(user.message || "Failed to fetch user details");
   } catch(e){ hideLoader(); alert("Network error"); }
@@ -176,6 +179,8 @@ document.getElementById("saveBtn").onclick = async ()=>{
     const investment = Number(document.getElementById("addInvestment").value || 0);
     const withdrawal = Number(document.getElementById("addWithdrawal").value || 0);
 
+        const profit = Number(document.getElementById("addProfit").value || 0);
+
     if(deposit>0){
       await fetch(`${backend}/user/${currentUserId}/transactions`, {
         method:'POST',
@@ -195,6 +200,13 @@ document.getElementById("saveBtn").onclick = async ()=>{
         method:'POST',
         headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
         body: JSON.stringify({ type:'withdrawal', amount:withdrawal })
+      });
+    }
+    if(profit>0){
+      await fetch(`${backend}/user/${currentUserId}/transactions`, {
+        method:'POST',
+        headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
+        body: JSON.stringify({ type:'profit', amount:profit })
       });
     }
 
