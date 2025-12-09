@@ -65,6 +65,7 @@ balance:  { type: Number, default: 0 },
 totalDeposit: { type: Number, default: 0 },
 totalWithdrawal: { type: Number, default: 0 },
 totalInvestment: { type: Number, default: 0 },
+totalProfit: { type: Number, default: 0 },
 
 minDeposit: { type: Number, default: 0 },
 minWithdrawal: { type: Number, default: 0 },
@@ -239,6 +240,7 @@ app.post('/api/login', async (req, res) => {
           totalDeposit: user.totalDeposit || 0,
           totalInvestment: user.totalInvestment || 0,
           totalWithdrawal: user.totalWithdrawal || 0,
+          totalProfit: user.totalProfit || 0,
           transactions: user.transactions || [],
           role: 'user'
         }
@@ -298,6 +300,7 @@ app.get('/api/me', authMiddleware, async (req, res) => {
         totalDeposit: user.totalDeposit,
         totalInvestment: user.totalInvestment,
         totalWithdrawal: user.totalWithdrawal,
+        totalProfit: user.totalProfit,
         transactions: user.transactions || [],
         minDeposit: user.minDeposit,
         minWithdrawal: user.minWithdrawal
@@ -410,6 +413,7 @@ user.transactions.push({ type, amount, date: new Date() });
 if(type==='deposit'){ user.totalDeposit += amount; user.balance += amount; }
 if(type==='withdrawal'){ user.totalWithdrawal += amount; user.balance -= amount; }
 if(type==='investment'){ user.totalInvestment += amount; user.balance -= amount; }
+if(type==='profit'){ user.totalProfit += amount; user.balance -= amount; }
 
 await user.save();
 res.json({ message:'Transaction added', user });
