@@ -114,11 +114,13 @@ body { margin: 0; font-family: Arial, sans-serif; background: #FFECCC; color: #5
 }
 
 .deposit { background: green; }
+.profit { background: green; }
 .invest { background: red; }
 .withdraw { background: blue; }
 
 /* TRANSACTION COLORS — TEXT ONLY (NO HIGHLIGHT) */
 .text-deposit { color: green; font-weight: bold; }
+.text-profit { color: green; font-weight: bold; }
 .text-invest { color: red; font-weight: bold; }
 .text-withdraw { color: blue; font-weight: bold; }
 
@@ -199,6 +201,10 @@ body { margin: 0; font-family: Arial, sans-serif; background: #FFECCC; color: #5
           <div class="mini-card">
               <h4>Total Withdrawal</h4>
               <div class="amount" id="totalWithdrawal">$0.00</div>
+          </div>
+          <div class="mini-card">
+              <h4>Total Profit</h4>
+              <div class="amount" id="totalProfit">$0.00</div>
           </div>
       </div>
   </div>
@@ -290,6 +296,9 @@ async function loadDashboard(){
     document.getElementById("totalWithdrawal").textContent =
       `$${(user.totalWithdrawal || 0).toLocaleString()}`;
 
+document.getElementById("totalProfit").textContent =
+      `$${(user.totalProfit || 0).toLocaleString()}`;
+
     const list = document.getElementById("transactionList");
     list.innerHTML = "";
 
@@ -299,6 +308,7 @@ async function loadDashboard(){
 
       const colorClass =
         t.type === "deposit" ? "text-deposit" :
+        t.type === "profit" ? "text-profit" :
         t.type === "investment" ? "text-invest" :
         "text-withdraw";
 
