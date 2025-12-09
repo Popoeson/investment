@@ -296,30 +296,33 @@ async function loadDashboard(){
     document.getElementById("totalWithdrawal").textContent =
       `$${(user.totalWithdrawal || 0).toLocaleString()}`;
 
-document.getElementById("totalProfit").textContent =
+    document.getElementById("totalProfit").textContent =
       `$${(user.totalProfit || 0).toLocaleString()}`;
 
     const list = document.getElementById("transactionList");
     list.innerHTML = "";
 
-    (user.transactions || []).forEach(t => {
-      const div = document.createElement("div");
-      div.className = "transaction-item";
+    // Sort transactions newest first
+    (user.transactions || [])
+      .sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt))
+      .forEach(t => {
+        const div = document.createElement("div");
+        div.className = "transaction-item";
 
-      const colorClass =
-        t.type === "deposit" ? "text-deposit" :
-        t.type === "profit" ? "text-profit" :
-        t.type === "investment" ? "text-invest" :
-        "text-withdraw";
+        const colorClass =
+          t.type === "deposit" ? "text-deposit" :
+          t.type === "profit" ? "text-profit" :
+          t.type === "investment" ? "text-invest" :
+          "text-withdraw";
 
-      div.innerHTML = `
-        <span class="${colorClass}">
-          ${t.type.toUpperCase()} — $${t.amount.toLocaleString()}
-        </span>
-        <span class="date">${new Date(t.date || t.createdAt).toLocaleString()}</span>
-      `;
-      list.appendChild(div);
-    });
+        div.innerHTML = `
+          <span class="${colorClass}">
+            ${t.type.toUpperCase()} — $${t.amount.toLocaleString()}
+          </span>
+          <span class="date">${new Date(t.date || t.createdAt).toLocaleString()}</span>
+        `;
+        list.appendChild(div);
+      });
 
     attachActionButtons();
   }
