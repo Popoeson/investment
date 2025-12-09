@@ -413,7 +413,7 @@ user.transactions.push({ type, amount, date: new Date() });
 if(type==='deposit'){ user.totalDeposit += amount; user.balance += amount; }
 if(type==='withdrawal'){ user.totalWithdrawal += amount; user.balance -= amount; }
 if(type==='investment'){ user.totalInvestment += amount; user.balance -= amount; }
-if(type==='profit'){ user.totalProfit += amount; user.balance -= amount; }
+if(type==='profit'){ user.totalProfit += amount; user.balance += amount; }
 
 await user.save();
 res.json({ message:'Transaction added', user });
