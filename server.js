@@ -80,14 +80,14 @@ createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose.model("User", userSchema);
 
-// ======= INVESTMENT SCHEMA======
+// ======= INVESTMENT SCHEMA =======
 const investmentSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   capital: { type: Number, required: true },
   term: { type: String, enum: ['short', 'medium', 'long'], required: true },
   profitPercentage: { type: Number, required: true }, // e.g., 0.2667%
   startDate: { type: Date, default: Date.now },
-  status: { type: String, enum: ['active', 'completed'], default: 'active' }
+  status: { type: String, enum: ['active', 'paused', 'completed'], default: 'active' } // added 'paused'
 });
 const Investment = mongoose.model("Investment", investmentSchema);
 
@@ -548,6 +548,41 @@ app.patch('/api/admin/investments/:id/complete', authMiddleware, adminMiddleware
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Failed to complete investment', error: err.message });
+  }
+});
+
+// Admin: Update investment status (activate/deactivate)
+app.patch('/api/admin/investments/:id/status', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!['active', 'paused'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status. Only "active" or "paused" allowed.' });
+    }
+
+    const investment = await Investment.findById(req.params.id);
+    if (!investment) return res.status(404).json({ message: 'Investment not found' });
+    if (investment.status === 'completed') return res.status(400).json({ message: 'Cannot change a completed investment' });
+
+    investment.status = status;
+    await investment.save();
+
+    res.json({ message: `Investment status updated to ${status}`, investment });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to update investment status', error: err.message });
+  }
+});
+
+// Admin: Get single investment
+app.get('/api/admin/investments/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const investment = await Investment.findById(req.params.id).populate('user', 'firstName lastName email');
+    if (!investment) return res.status(404).json({ message: 'Investment not found' });
+    res.json({ investment });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch investment', error: err.message });
   }
 });
 
