@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin Investments - Chartered Investment Company</title>
+<style>
+  body { margin:0; font-family: Arial,sans-serif; background:#FFECCC; color:#5E1010; }
+  header { background:#5E1010; color:#FFECCC; padding:20px; display:flex; justify-content:space-between; align-items:center; }
+  header h1 { margin:0; font-size:24px; }
+  header button { background:#FFECCC; color:#5E1010; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold; }
+
+  .container { display:flex; flex-wrap:wrap; max-width:1200px; margin:20px auto; padding:0 20px; gap:20px; }
+  .users-list { flex:1; min-width:250px; max-width:300px; }
+  .investments-panel { flex:2; min-width:400px; background:#fff; border:2px solid #5E1010; border-radius:12px; padding:20px; }
+
+  .user-card { background:#fff; border:2px solid #5E1010; border-radius:12px; padding:15px; margin-bottom:10px; cursor:pointer; transition:transform 0.2s; }
+  .user-card:hover { transform:translateX(5px); }
+  .user-card.selected { background:#5E1010; color:#FFECCC; }
+
+  table { width:100%; border-collapse:collapse; margin-top:10px; }
+  th, td { padding:10px; border:1px solid #ccc; text-align:center; }
+  th { background:#5E1010; color:#FFECCC; }
+  td button { padding:5px 10px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; }
+  .btn-complete { background:#28a745; color:#fff; }
+  .btn-toggle { background:#ffc107; color:#5E1010; }
+  .btn-disabled { background:#ccc; color:#666; cursor:not-allowed; }
+
+  #loadingOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter:blur(5px); z-index:99999; justify-content:center; align-items:center; }
+  .spinner { width:60px; height:60px; border:6px solid white; border-top-color:#5E1010; border-radius:50%; animation:spin 0.9s linear infinite; }
+  @keyframes spin { 0%{transform:rotate(0);} 100%{transform:rotate(360deg);} }
+  @media(max-width:900px){ .container { flex-direction:column; } .investments-panel{min-width:100%;} }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Admin Investment Dashboard</h1>
+  <button id="logoutBtn">Logout</button>
+</header>
+
+<div class="container">
+  <div class="users-list" id="usersList">
+    <!-- User cards populated here -->
+  </div>
+  <div class="investments-panel" id="investmentsPanel">
+    <h2 id="selectedUserName">Select a user</h2>
+    <table id="investmentsTable">
+      <thead>
+        <tr>
+          <th>Capital</th>
+          <th>Term</th>
+          <th>Profit %</th>
+          <th>Daily Profit</th>
+          <th>Total Profit</th>
+          <th>Expected Return</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Investments rows here -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="loadingOverlay"><div class="spinner"></div></div>
+
+<script>
+const backend = "https://investment-9ub4.onrender.com/api/admin";
+const token = localStorage.getItem("token"); 
+
+function showLoader(){ document.getElementById("loadingOverlay").style.display="flex"; }
+function hideLoader(){ document.getElementById("loadingOverlay").style.display="none"; }
+function fmt(n){ return Number(n).toLocaleString(undefined, {maximumFractionDigits:2}); }
+
+document.getElementById('logoutBtn').onclick = ()=>{
+  localStorage.removeItem('token');
+  window.location.href = 'index.html';
+};
+
+let selectedUserId = null;
+
+// Fetch and render users
+async function fetchUsers(){
+  showLoader();
+  try{
+    const res = await fetch(`${backend}/users`, { headers:{ 'Authorization': `Bearer ${token}` }});
+    const data = await res.json();
+    hideLoader();
+    if(res.ok) renderUsers(data.users || []);
+    else alert(data.message || 'Failed to fetch users');
+  } catch(e){ hideLoader(); alert('Network error'); console.error(e); }
+}
+
+function renderUsers(users){
+  const list = document.getElementById('usersList');
+  list.innerHTML = '';
+  users.forEach(user=>{
+    const card = document.createElement('div');
+    card.className = 'user-card';
+    card.innerHTML = `<strong>${user.firstName} ${user.lastName}</strong><br>${user.email}`;
+    card.onclick = ()=> selectUser(user._id, user.firstName + ' ' + user.lastName, card);
+    list.appendChild(card);
+  });
+}
+
+async function selectUser(userId, name, cardEl){
+  selectedUserId = userId;
+  document.getElementById('selectedUserName').innerText = name;
+
+  // Highlight selected
+  document.querySelectorAll('.user-card').forEach(c=>c.classList.remove('selected'));
+  cardEl.classList.add('selected');
+
+  await fetchInvestments(userId);
+}
+
+// Fetch investments of user
+async function fetchInvestments(userId){
+  showLoader();
+  try{
+    const res = await fetch(`${backend}/investments?userId=${userId}`, { headers:{ 'Authorization': `Bearer ${token}` }});
+    const data = await res.json();
+    hideLoader();
+    if(res.ok) renderInvestments(data.investments || []);
+    else alert(data.message || 'Failed to fetch investments');
+  } catch(e){ hideLoader(); alert('Network error'); console.error(e); }
+}
+
+// Render investments table
+function renderInvestments(investments){
+  const tbody = document.querySelector('#investmentsTable tbody');
+  tbody.innerHTML = '';
+  investments.forEach(inv=>{
+    const termDays = inv.term==='short'?25:inv.term==='medium'?40:60;
+    const dailyProfit = inv.capital * (inv.profitPercentage/100);
+    const totalProfit = dailyProfit * termDays;
+    const expectedReturn = inv.capital + totalProfit;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>$${fmt(inv.capital)}</td>
+      <td>${inv.term}</td>
+      <td>${fmt(inv.profitPercentage)}%</td>
+      <td>$${fmt(dailyProfit)}</td>
+      <td>$${fmt(totalProfit)}</td>
+      <td>$${fmt(expectedReturn)}</td>
+      <td>${inv.status}</td>
+      <td>
+        <button class="btn-toggle">${inv.status==='active'?'Pause':'Activate'}</button>
+        <button class="btn-complete" ${inv.status==='completed'?'disabled class="btn-disabled"':''}>Complete</button>
+      </td>
+    `;
+    // Action buttons
+    const toggleBtn = tr.querySelector('.btn-toggle');
+    const completeBtn = tr.querySelector('.btn-complete');
+
+    toggleBtn.onclick = ()=> toggleInvestment(inv._id, inv.status==='active'?'paused':'active');
+    completeBtn.onclick = ()=> completeInvestment(inv._id);
+
+    tbody.appendChild(tr);
+  });
+}
+
+// Toggle status
+async function toggleInvestment(invId, newStatus){
+  showLoader();
+  try{
+    const res = await fetch(`${backend}/investments/${invId}/status`, {
+      method:'PATCH',
+      headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
+    const data = await res.json();
+    hideLoader();
+    if(res.ok) fetchInvestments(selectedUserId);
+    else alert(data.message || 'Failed to update status');
+  } catch(e){ hideLoader(); alert('Network error'); }
+}
+
+// Complete investment
+async function completeInvestment(invId){
+  if(!confirm('Are you sure to complete this investment?')) return;
+  showLoader();
+  try{
+    const res = await fetch(`${backend}/investments/${invId}/complete`, {
+      method:'PATCH',
+      headers:{ 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    hideLoader();
+    if(res.ok) fetchInvestments(selectedUserId);
+    else alert(data.message || 'Failed to complete investment');
+  } catch(e){ hideLoader(); alert('Network error'); }
+}
+
+// Init
+fetchUsers();
+</script>
+
+</body>
+</html>
