@@ -1,7 +1,8 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Admin Dashboard - Ann Investment Company</title>
 <style>
   body { margin:0; font-family: Arial,sans-serif; background:#FFECCC; color:#5E1010; }
@@ -13,95 +14,184 @@
   .user-card { background:#fff; border:2px solid #5E1010; border-radius:12px; padding:20px; cursor:pointer; transition:transform 0.2s; }
   .user-card:hover { transform:translateY(-5px); }
   .user-card h3 { margin:0 0 10px 0; }
-  .user-card p { margin:5px 0; }/* Modal */
-#modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:9999; }
-#modal .modal-content { background:#fff; border-radius:12px; padding:30px; width:90%; max-width:600px; max-height:90vh; overflow-y:auto; }
-#modal .modal-content h2 { margin-top:0; }
-#modal .modal-content label { display:block; margin-top:10px; font-weight:bold; }
-#modal .modal-content input { width:100%; padding:8px; margin-top:4px; border-radius:6px; border:1px solid #ccc; }
-#modal .modal-content button { background:#5E1010; color:#FFECCC; border:none; padding:10px 15px; margin-top:15px; border-radius:6px; cursor:pointer; font-weight:bold; margin-right:10px; }
-#modal .modal-content button.delete { background:#FF3333; }
-#modal .modal-content button.close { background:#ccc; color:#5E1010; }
+  .user-card p { margin:5px 0; }
 
-/* Loader */
-#loadingOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter:blur(5px); z-index:99999; justify-content:center; align-items:center; }
-.spinner { width:60px; height:60px; border:6px solid white; border-top-color:#5E1010; border-radius:50%; animation:spin 0.9s linear infinite; }
-@keyframes spin { 0%{transform:rotate(0);} 100%{transform:rotate(360deg);} }
-@media(max-width:600px){ header h1{font-size:20px;} #modal .modal-content{padding:20px;} }
+  /* Modal */
+  #modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:9999; }
+  #modal .modal-content { background:#fff; border-radius:12px; padding:30px; width:90%; max-width:720px; max-height:90vh; overflow-y:auto; }
+  #modal .modal-content h2 { margin-top:0; }
+  #modal .modal-content label { display:block; margin-top:10px; font-weight:bold; }
+  #modal .modal-content input, #modal .modal-content select { width:100%; padding:8px; margin-top:4px; border-radius:6px; border:1px solid #ccc; box-sizing:border-box; }
+  #modal .modal-content .row { display:flex; gap:10px; }
+  #modal .modal-content .row > div { flex:1; }
+  #modal .modal-content button { background:#5E1010; color:#FFECCC; border:none; padding:10px 15px; margin-top:15px; border-radius:6px; cursor:pointer; font-weight:bold; margin-right:10px; }
+  #modal .modal-content button.delete { background:#FF3333; }
+  #modal .modal-content button.close { background:#ccc; color:#5E1010; }
+  #modal .note { font-size:13px; color:#666; margin-top:6px; }
+
+  /* Loader */
+  #loadingOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter:blur(5px); z-index:99999; justify-content:center; align-items:center; }
+  .spinner { width:60px; height:60px; border:6px solid white; border-top-color:#5E1010; border-radius:50%; animation:spin 0.9s linear infinite; }
+  @keyframes spin { 0%{transform:rotate(0);} 100%{transform:rotate(360deg);} }
+  @media(max-width:600px){ header h1{font-size:20px;} #modal .modal-content{padding:20px;} .row{flex-direction:column;} }
 </style>
-
 </head>
 <body>
 <header>
   <h1>Admin Dashboard</h1>
   <button id="logoutBtn">Logout</button>
-</header><div class="container">
+</header>
+
+<div class="container">
   <div class="cards-grid" id="cardsGrid">
     <!-- User cards populated here -->
   </div>
-</div><!-- Modal --><div id="modal">
-  <div class="modal-content">
+</div>
+
+<!-- Modal -->
+<div id="modal" role="dialog" aria-hidden="true">
+  <div class="modal-content" role="document">
     <h2 id="modalName"></h2>
     <p><strong>Email:</strong> <span id="modalEmail"></span></p>
     <p><strong>Phone:</strong> <span id="modalPhone"></span></p>
     <p><strong>Verified:</strong> <span id="modalVerified"></span></p>
-    <p><strong>Frozen:</strong> <span id="modalFrozen"></span></p><label>First Name</label><input type="text" id="editFirstName">
-<label>Last Name</label><input type="text" id="editLastName">
-<label>Phone</label><input type="text" id="editPhone">
-<label>Balance</label><input type="number" id="editBalance">
-<label>Minimum Deposit</label><input type="number" id="editMinDeposit">
-<label>Minimum Withdrawal</label><input type="number" id="editMinWithdrawal">
-<label>Add Deposit</label><input type="number" id="addDeposit">
-<label>Add Investment</label><input type="number" id="addInvestment">
-<label>Add Withdrawal</label><input type="number" id="addWithdrawal">
-<label>Add Profit</label><input type="number" id="addProfit">
+    <p><strong>Frozen:</strong> <span id="modalFrozen"></span></p>
 
-<div style="margin-top:15px;">
-  <button id="saveBtn">Save Changes</button>
-  <button id="verifyBtn">Verify User</button>
-  <button id="freezeBtn">Freeze/Unfreeze</button>
-  <button id="deleteBtn" class="delete">Delete</button>
-  <button id="closeModal" class="close">Close</button>
+    <label>First Name</label>
+    <input type="text" id="editFirstName">
+
+    <label>Last Name</label>
+    <input type="text" id="editLastName">
+
+    <label>Phone</label>
+    <input type="text" id="editPhone">
+
+    <div class="row">
+      <div>
+        <label>Balance</label>
+        <input type="number" id="editBalance">
+      </div>
+      <div>
+        <label>Minimum Deposit</label>
+        <input type="number" id="editMinDeposit">
+      </div>
+      <div>
+        <label>Minimum Withdrawal</label>
+        <input type="number" id="editMinWithdrawal">
+      </div>
+    </div>
+
+    <hr style="margin:16px 0;" />
+
+    <h3 style="margin:0;">Quick Transactions (will add transactions & update totals)</h3>
+
+    <div class="row">
+      <div>
+        <label>Add Deposit</label>
+        <input type="number" id="addDeposit" placeholder="0">
+      </div>
+      <div>
+        <label>Add Investment (amount)</label>
+        <input type="number" id="addInvestment" placeholder="0">
+      </div>
+      <div>
+        <label>Add Withdrawal</label>
+        <input type="number" id="addWithdrawal" placeholder="0">
+      </div>
+      <div>
+        <label>Add Profit</label>
+        <input type="number" id="addProfit" placeholder="0">
+      </div>
+    </div>
+
+    <hr style="margin:16px 0;" />
+
+    <h3 style="margin:0;">Create Investment (stores investment metadata)</h3>
+
+    <div class="row">
+      <div>
+        <label>Investment Capital</label>
+        <input type="number" id="investCapital" placeholder="e.g. 3000">
+      </div>
+      <div>
+        <label>Term</label>
+        <select id="investTerm">
+          <option value="short" data-days="25">Short — 25 days</option>
+          <option value="medium" data-days="40">Medium — 40 days</option>
+          <option value="long" data-days="60">Long — 60 days</option>
+        </select>
+      </div>
+      <div>
+        <label>Daily % (percent)</label>
+        <input type="number" id="investDailyPercent" step="0.0001" placeholder="e.g. 0.2667">
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:8px;">
+      <div>
+        <label>Daily Profit</label>
+        <input type="text" id="calcDailyProfit" disabled>
+      </div>
+      <div>
+        <label>Total Profit (term)</label>
+        <input type="text" id="calcTotalProfit" disabled>
+      </div>
+      <div>
+        <label>Expected Return</label>
+        <input type="text" id="calcExpectedReturn" disabled>
+      </div>
+    </div>
+
+    <div class="note">Note: creating an investment will (1) save investment metadata to the user's `investments[]` (requires backend route), and (2) also POST an 'investment' transaction so your totals update normally.</div>
+
+    <div style="margin-top:15px;">
+      <button id="saveBtn">Save Changes</button>
+      <button id="verifyBtn">Verify User</button>
+      <button id="freezeBtn">Freeze/Unfreeze</button>
+      <button id="deleteBtn" class="delete">Delete</button>
+      <button id="closeModal" class="close">Close</button>
+    </div>
+  </div>
 </div>
 
-  </div>
-</div><div id="loadingOverlay"><div class="spinner"></div></div>
+<div id="loadingOverlay"><div class="spinner"></div></div>
 
 <script>
+/* ---------- Config ---------- */
 const backend = "https://investment-9ub4.onrender.com/api/admin";
 const token = localStorage.getItem("token"); // Admin JWT token
 
-// LOGOUT
-document.getElementById("logoutBtn").onclick = () => {
-  localStorage.removeItem("token");
-  window.location.href = "index.html";
-};
-
-// Loader
+/* ---------- Helpers ---------- */
 function showLoader(){ document.getElementById("loadingOverlay").style.display="flex"; }
 function hideLoader(){ document.getElementById("loadingOverlay").style.display="none"; }
+function $id(id){ return document.getElementById(id); }
+function fmt(n){ return Number(n).toLocaleString(undefined, {maximumFractionDigits:2}); }
 
-// FETCH USERS
+/* ---------- Logout ---------- */
+$id('logoutBtn').onclick = () => {
+  localStorage.removeItem('token');
+  window.location.href = 'index.html';
+};
+
+/* ---------- Fetch users ---------- */
 async function fetchUsers(){
   showLoader();
   try{
-    const res = await fetch(`${backend}/users`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const res = await fetch(`${backend}/users`, { headers: { 'Authorization': `Bearer ${token}` } });
     const data = await res.json();
     hideLoader();
-    if(res.ok) renderUserCards(data.users);
+    if(res.ok) renderUserCards(data.users || []);
     else alert(data.message || "Failed to fetch users");
-  } catch(e){ hideLoader(); alert("Network error"); }
+  } catch(e){ hideLoader(); alert("Network error"); console.error(e); }
 }
 
-// RENDER CARDS
+/* ---------- Render user cards ---------- */
 function renderUserCards(users){
-  const grid = document.getElementById("cardsGrid");
+  const grid = $id('cardsGrid');
   grid.innerHTML = "";
   users.forEach(user=>{
-    const card = document.createElement("div");
-    card.className = "user-card";
+    const card = document.createElement('div');
+    card.className = 'user-card';
     card.innerHTML = `
       <h3>${user.firstName} ${user.lastName}</h3>
       <p>Email: ${user.email}</p>
@@ -113,140 +203,183 @@ function renderUserCards(users){
   });
 }
 
-// MODAL
+/* ---------- Modal logic ---------- */
 let currentUserId = null;
 
 async function openModal(userId){
   currentUserId = userId;
   showLoader();
-  try{
-    const res = await fetch(`${backend}/user/${userId}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const user = await res.json();
+  try {
+    const res = await fetch(`${backend}/user/${userId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const payload = await res.json();
     hideLoader();
-    if(res.ok){
-      document.getElementById("modalName").innerText = `${user.user.firstName} ${user.user.lastName}`;
-      document.getElementById("modalEmail").innerText = user.user.email;
-      document.getElementById("modalPhone").innerText = user.user.phone;
-      document.getElementById("modalVerified").innerText = user.user.verified ? "Yes" : "No";
-      document.getElementById("modalFrozen").innerText = user.user.frozen ? "Yes" : "No";
+    if(!res.ok) { alert(payload.message||'Failed to fetch user'); return; }
+    const user = payload.user;
 
-      document.getElementById("editFirstName").value = user.user.firstName;
-      document.getElementById("editLastName").value = user.user.lastName;
-      document.getElementById("editPhone").value = user.user.phone;
-      document.getElementById("editBalance").value = user.user.balance || 0;
-                 document.getElementById("editMinDeposit").value = user.user.minDeposit || 0;
-document.getElementById("editMinWithdrawal").value = user.user.minWithdrawal || 0;
-      document.getElementById("addDeposit").value = "";
-      document.getElementById("addInvestment").value = "";
-      document.getElementById("addWithdrawal").value = "";
+    // populate fields
+    $id('modalName').innerText = `${user.firstName} ${user.lastName}`;
+    $id('modalEmail').innerText = user.email || '';
+    $id('modalPhone').innerText = user.phone || '';
+    $id('modalVerified').innerText = user.verified ? 'Yes' : 'No';
+    $id('modalFrozen').innerText = user.frozen ? 'Yes' : 'No';
 
-document.getElementById("addProfit").value = "";
+    $id('editFirstName').value = user.firstName || '';
+    $id('editLastName').value = user.lastName || '';
+    $id('editPhone').value = user.phone || '';
+    $id('editBalance').value = user.balance ?? 0;
+    $id('editMinDeposit').value = user.minDeposit ?? 0;
+    $id('editMinWithdrawal').value = user.minWithdrawal ?? 0;
 
-      document.getElementById("modal").style.display = "flex";
-    } else alert(user.message || "Failed to fetch user details");
-  } catch(e){ hideLoader(); alert("Network error"); }
+    // reset quick fields
+    $id('addDeposit').value = '';
+    $id('addInvestment').value = '';
+    $id('addWithdrawal').value = '';
+    $id('addProfit').value = '';
+
+    // reset investment modal
+    $id('investCapital').value = '';
+    $id('investTerm').value = 'short';
+    $id('investDailyPercent').value = ''; // allow admin to fill/edit
+    recomputeInvestmentPreview();
+
+    $id('modal').style.display = 'flex';
+  } catch(err) { hideLoader(); alert('Network error'); console.error(err); }
 }
 
-document.getElementById("closeModal").onclick = ()=> {
-  document.getElementById("modal").style.display = "none";
-};
+$id('closeModal').onclick = ()=> { $id('modal').style.display = 'none'; };
 
-// SAVE USER INFO
-document.getElementById("saveBtn").onclick = async ()=>{
+/* ---------- Compute investment preview ---------- */
+function getTermDays(term){
+  if(term === 'short') return 25;
+  if(term === 'medium') return 40;
+  if(term === 'long') return 60;
+  return 0;
+}
+
+function recomputeInvestmentPreview(){
+  const capital = Number($id('investCapital').value || 0);
+  const dailyPercent = Number($id('investDailyPercent').value || 0); // percent
+  const term = $id('investTerm').value;
+  const termDays = getTermDays(term);
+
+  const dailyProfit = (capital * (dailyPercent/100));
+  const totalProfit = dailyProfit * termDays;
+  const expected = capital + totalProfit;
+
+  $id('calcDailyProfit').value = dailyProfit ? `$${fmt(dailyProfit)}` : '';
+  $id('calcTotalProfit').value = totalProfit ? `$${fmt(totalProfit)}` : '';
+  $id('calcExpectedReturn').value = expected ? `$${fmt(expected)}` : '';
+}
+
+/* wire inputs for live calc */
+['investCapital','investDailyPercent','investTerm'].forEach(id=>{
+  $id(id).addEventListener('input', recomputeInvestmentPreview);
+  $id(id).addEventListener('change', recomputeInvestmentPreview);
+});
+
+/* ---------- Save changes ---------- */
+$id('saveBtn').onclick = async ()=>{
+  if(!currentUserId) return alert('No user selected');
   showLoader();
   try{
-    // Update basic info first
+    // 1) Basic profile updates
     const updates = {
-  firstName: document.getElementById("editFirstName").value,
-  lastName: document.getElementById("editLastName").value,
-  phone: document.getElementById("editPhone").value,
-  balance: Number(document.getElementById("editBalance").value),
-  minDeposit: Number(document.getElementById("editMinDeposit").value),
-  minWithdrawal: Number(document.getElementById("editMinWithdrawal").value)
-};
+      firstName: $id('editFirstName').value,
+      lastName: $id('editLastName').value,
+      phone: $id('editPhone').value,
+      balance: Number($id('editBalance').value || 0),
+      minDeposit: Number($id('editMinDeposit').value || 0),
+      minWithdrawal: Number($id('editMinWithdrawal').value || 0)
+    };
+
     const res1 = await fetch(`${backend}/user/${currentUserId}`, {
-      method:'PUT',
-      headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
       body: JSON.stringify(updates)
     });
-    const data1 = await res1.json();
-    if(!res1.ok) throw new Error(data1.message || "Failed to update user");
+    const d1 = await res1.json();
+    if(!res1.ok) throw new Error(d1.message || 'Failed to update user');
 
-    // Add transactions
-    const deposit = Number(document.getElementById("addDeposit").value || 0);
-    const investment = Number(document.getElementById("addInvestment").value || 0);
-    const withdrawal = Number(document.getElementById("addWithdrawal").value || 0);
+    // 2) Quick transactions (existing flow)
+    const deposit = Number($id('addDeposit').value || 0);
+    const investmentQuick = Number($id('addInvestment').value || 0);
+    const withdrawal = Number($id('addWithdrawal').value || 0);
+    const profit = Number($id('addProfit').value || 0);
 
-        const profit = Number(document.getElementById("addProfit").value || 0);
-
-    if(deposit>0){
+    // helper to post transaction
+    async function postTxn(type, amount){
+      if(amount <= 0) return;
       await fetch(`${backend}/user/${currentUserId}/transactions`, {
-        method:'POST',
-        headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
-        body: JSON.stringify({ type:'deposit', amount:deposit })
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
+        body: JSON.stringify({ type, amount })
       });
     }
-    if(investment>0){
-      await fetch(`${backend}/user/${currentUserId}/transactions`, {
-        method:'POST',
-        headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
-        body: JSON.stringify({ type:'investment', amount:investment })
+
+    if(deposit>0) await postTxn('deposit', deposit);
+    if(investmentQuick>0) await postTxn('investment', investmentQuick);
+    if(withdrawal>0) await postTxn('withdrawal', withdrawal);
+    if(profit>0) await postTxn('profit', profit);
+
+    // 3) If admin created a full investment (rich metadata) — POST to new investments endpoint
+    const capital = Number($id('investCapital').value || 0);
+    if(capital > 0){
+      const term = $id('investTerm').value;
+      const termDays = getTermDays(term);
+      const dailyPercent = Number($id('investDailyPercent').value || 0);
+      // Save investment metadata (this endpoint should be implemented server-side)
+      const investRes = await fetch(`${backend}/user/${currentUserId}/investments`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
+        body: JSON.stringify({
+          capital,
+          term,
+          termDays,
+          dailyPercent,
+          startDate: new Date().toISOString()
+        })
       });
-    }
-    if(withdrawal>0){
-      await fetch(`${backend}/user/${currentUserId}/transactions`, {
-        method:'POST',
-        headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
-        body: JSON.stringify({ type:'withdrawal', amount:withdrawal })
-      });
-    }
-    if(profit>0){
-      await fetch(`${backend}/user/${currentUserId}/transactions`, {
-        method:'POST',
-        headers:{ 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
-        body: JSON.stringify({ type:'profit', amount:profit })
-      });
+      const investData = await investRes.json();
+      // If the investments endpoint isn't present, backend will return error; still continue.
+      if(!investRes.ok){
+        console.warn('Investments endpoint responded with:', investData);
+        // Continue — still post transaction so totals reflect investment
+      }
+
+      // Also post a transaction so totals/balance update as before
+      await postTxn('investment', capital);
     }
 
     hideLoader();
-    alert("User updated successfully");
-    document.getElementById("modal").style.display = "none";
+    alert('User updated successfully');
+    $id('modal').style.display = 'none';
     fetchUsers();
 
-  } catch(e){ hideLoader(); alert(e.message || "Network error"); }
-};
-
-// VERIFY USER
-document.getElementById("verifyBtn").onclick = async () => {
-  showLoader();
-  try {
-    const res = await fetch(`https://investment-9ub4.onrender.com/api/users/${currentUserId}/verify`, {
-      method: 'PATCH', // must be PATCH
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-
-    const data = await res.json();
+  } catch(err){
     hideLoader();
-
-    if (res.ok) {
-      alert("User verified");
-      document.getElementById("modal").style.display = "none";
-      fetchUsers();
-    } else {
-      alert(data.message || "Verification failed");
-    }
-
-  } catch (e) {
-    hideLoader();
-    alert("Network error");
-    console.error(e);
+    console.error(err);
+    alert(err.message || 'Network error');
   }
 };
 
-// FREEZE USER
-document.getElementById("freezeBtn").onclick = async ()=>{
+/* ---------- Verify, Freeze, Delete ---------- */
+$id('verifyBtn').onclick = async () => {
+  if(!currentUserId) return;
+  showLoader();
+  try {
+    const res = await fetch(`https://investment-9ub4.onrender.com/api/users/${currentUserId}/verify`, {
+      method: 'PATCH',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    hideLoader();
+    if(res.ok){ alert('User verified'); $id('modal').style.display='none'; fetchUsers(); }
+    else alert(data.message || 'Verification failed');
+  } catch(e){ hideLoader(); alert('Network error'); }
+};
+
+$id('freezeBtn').onclick = async ()=>{
+  if(!currentUserId) return;
   showLoader();
   try{
     const res = await fetch(`${backend}/user/${currentUserId}/freeze`, {
@@ -255,14 +388,14 @@ document.getElementById("freezeBtn").onclick = async ()=>{
     });
     const data = await res.json();
     hideLoader();
-    if(res.ok){ alert("User freeze status updated"); document.getElementById("modal").style.display="none"; fetchUsers(); }
-    else alert(data.message || "Action failed");
-  } catch(e){ hideLoader(); alert("Network error"); }
+    if(res.ok){ alert('User freeze status updated'); $id('modal').style.display='none'; fetchUsers(); }
+    else alert(data.message || 'Action failed');
+  } catch(e){ hideLoader(); alert('Network error'); }
 };
 
-// DELETE USER
-document.getElementById("deleteBtn").onclick = async ()=>{
-  if(!confirm("Are you sure you want to delete this user?")) return;
+$id('deleteBtn').onclick = async ()=>{
+  if(!currentUserId) return;
+  if(!confirm('Are you sure you want to delete this user?')) return;
   showLoader();
   try{
     const res = await fetch(`${backend}/user/${currentUserId}`, {
@@ -271,12 +404,12 @@ document.getElementById("deleteBtn").onclick = async ()=>{
     });
     const data = await res.json();
     hideLoader();
-    if(res.ok){ alert("User deleted"); document.getElementById("modal").style.display="none"; fetchUsers(); }
-    else alert(data.message || "Delete failed");
-  } catch(e){ hideLoader(); alert("Network error"); }
+    if(res.ok){ alert('User deleted'); $id('modal').style.display='none'; fetchUsers(); } 
+    else alert(data.message || 'Delete failed');
+  } catch(e){ hideLoader(); alert('Network error'); }
 };
 
-// INIT
+/* ---------- Init ---------- */
 fetchUsers();
 </script>
 </body>
