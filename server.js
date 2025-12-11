@@ -80,6 +80,16 @@ createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose.model("User", userSchema);
 
+// ======= INVESTMENT SCHEMA======
+const investmentSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  capital: { type: Number, required: true },
+  term: { type: String, enum: ['short', 'medium', 'long'], required: true },
+  profitPercentage: { type: Number, required: true }, // e.g., 0.2667%
+  startDate: { type: Date, default: Date.now },
+  status: { type: String, enum: ['active', 'completed'], default: 'active' }
+});
+const Investment = mongoose.model("Investment"userInvestment);
 // --------------------------
 // Auth Middleware
 // --------------------------
