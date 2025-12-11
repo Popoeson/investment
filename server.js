@@ -453,7 +453,6 @@ app.post('/api/admin/user/:id/transactions', authMiddleware, adminMiddleware, as
 // --------------------------
 // Admin Investment Routes
 // --------------------------
-const Investment = require('./models/Investment'); // Assuming you created the investment schema
 
 // CREATE INVESTMENT
 app.post('/api/admin/investments/create', authMiddleware, adminMiddleware, async (req, res) => {
