@@ -328,7 +328,7 @@ $id('saveBtn').onclick = async ()=>{
       const termDays = getTermDays(term);
       const dailyPercent = Number($id('investDailyPercent').value || 0);
       // Save investment metadata (this endpoint should be implemented server-side)
-      const investRes = await fetch(`${backend}/user/${currentUserId}/investments`, {
+      const investRes = await fetch(`${backend}/investments/create`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
         body: JSON.stringify({
