@@ -450,6 +450,108 @@ app.post('/api/admin/user/:id/transactions', authMiddleware, adminMiddleware, as
   }
 });
 
+// --------------------------
+// Admin Investment Routes
+// --------------------------
+const Investment = require('./models/Investment'); // Assuming you created the investment schema
+
+// CREATE INVESTMENT
+app.post('/api/admin/investments/create', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { userId, capital, term, profitPercentage } = req.body;
+
+    if (!userId || !capital || !term || !profitPercentage) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if (user.balance < capital) {
+      return res.status(400).json({ message: 'User balance insufficient for this investment' });
+    }
+
+    // Deduct capital from user's balance and update totalInvestment
+    user.balance -= capital;
+    user.totalInvestment += capital;
+
+    // Add investment transaction
+    user.transactions.push({ type: 'investment', amount: capital, date: new Date() });
+
+    await user.save();
+
+    // Save investment
+    const investment = new Investment({
+      user: userId,
+      capital,
+      term, // short, medium, long
+      profitPercentage,
+      startDate: new Date(),
+      status: 'active'
+    });
+
+    await investment.save();
+
+    res.json({ message: 'Investment created successfully', investment });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to create investment', error: err.message });
+  }
+});
+
+// GET ALL INVESTMENTS (optionally filter by user)
+app.get('/api/admin/investments', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const query = userId ? { user: userId } : {};
+
+    const investments = await Investment.find(query)
+      .populate('user', 'firstName lastName email') // optional
+      .sort({ startDate: -1 }); // latest first
+
+    res.json({ investments });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch investments', error: err.message });
+  }
+});
+
+// COMPLETE INVESTMENT (mark as finished, add profit to user)
+app.patch('/api/admin/investments/:id/complete', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const investment = await Investment.findById(req.params.id);
+    if (!investment) return res.status(404).json({ message: 'Investment not found' });
+    if (investment.status === 'completed') return res.status(400).json({ message: 'Investment already completed' });
+
+    const user = await User.findById(investment.user);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Calculate profit
+    const termDays = investment.term === 'short' ? 25 : investment.term === 'medium' ? 40 : 60;
+    const dailyProfit = investment.capital * (investment.profitPercentage / 100);
+    const totalProfit = dailyProfit * termDays;
+
+    // Update user balance and totalProfit
+    user.balance += totalProfit;
+    user.totalProfit += totalProfit;
+
+    // Add profit transaction
+    user.transactions.push({ type: 'profit', amount: totalProfit, date: new Date() });
+
+    await user.save();
+
+    // Mark investment as completed
+    investment.status = 'completed';
+    await investment.save();
+
+    res.json({ message: 'Investment completed and profit added', investment, totalProfit });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to complete investment', error: err.message });
+  }
+});
+
 // Delete user
 app.delete('/api/admin/user/:id', authMiddleware, adminMiddleware, async(req,res)=>{
 try{
