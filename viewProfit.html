@@ -59,18 +59,25 @@ document.getElementById('logoutBtn').onclick = () => {
   window.location.href = 'index.html';
 };
 
-/* ---------- Fetch investments ---------- */
-async function fetchInvestments(){
+/* ---------- Fetch user & investments ---------- */
+async function fetchUserInvestments(){
   showLoader();
-  try{
-    const res = await fetch(`${backend}/investments`, {
+  try {
+    const res = await fetch(`${backend}/me`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const data = await res.json();
     hideLoader();
-    if(res.ok) renderInvestments(data.investments || []);
-    else alert(data.message || 'Failed to fetch investments');
-  } catch(e){ hideLoader(); alert('Network error'); console.error(e); }
+    if(!res.ok) return alert(data.message || 'Failed to fetch data');
+
+    const investments = data.user.investments || [];
+    renderInvestments(investments);
+
+  } catch(e){
+    hideLoader();
+    alert('Network error');
+    console.error(e);
+  }
 }
 
 /* ---------- Render investments ---------- */
@@ -106,7 +113,7 @@ function renderInvestments(investments){
 }
 
 /* ---------- Init ---------- */
-fetchInvestments();
+fetchUserInvestments();
 </script>
 
 </body>
