@@ -288,11 +288,14 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// GET USER DETAILS 
+// GET USER DETAILS WITH INVESTMENTS
 app.get('/api/me', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Fetch user's investments
+    const investments = await Investment.find({ user: user._id }).sort({ startDate: -1 });
 
     res.json({
       user: {
@@ -306,7 +309,7 @@ app.get('/api/me', authMiddleware, async (req, res) => {
         state: user.state || '',
         zip: user.zip || '',
         selfieUrl: user.selfieUrl || '',
-        verified: user.verified, // <-- add this
+        verified: user.verified,
         balance: user.balance,
         totalDeposit: user.totalDeposit,
         totalInvestment: user.totalInvestment,
@@ -314,7 +317,15 @@ app.get('/api/me', authMiddleware, async (req, res) => {
         totalProfit: user.totalProfit,
         transactions: user.transactions || [],
         minDeposit: user.minDeposit,
-        minWithdrawal: user.minWithdrawal
+        minWithdrawal: user.minWithdrawal,
+        investments: investments.map(inv => ({
+          _id: inv._id,
+          capital: inv.capital,
+          term: inv.term,
+          profitPercentage: inv.profitPercentage,
+          startDate: inv.startDate,
+          status: inv.status
+        }))
       }
     });
   } catch (err) {
