@@ -321,34 +321,37 @@ $id('saveBtn').onclick = async ()=>{
     if(withdrawal>0) await postTxn('withdrawal', withdrawal);
     if(profit>0) await postTxn('profit', profit);
 
-    // 3) If admin created a full investment (rich metadata) — POST to new investments endpoint
-    const capital = Number($id('investCapital').value || 0);
-    if(capital > 0){
-      const term = $id('investTerm').value;
-      const termDays = getTermDays(term);
-      const dailyPercent = Number($id('investDailyPercent').value || 0);
-      // Save investment metadata (this endpoint should be implemented server-side)
-      const investRes = await fetch(`${backend}/investments/create`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type':'application/json' },
-        body: JSON.stringify({
-          capital,
-          term,
-          termDays,
-          dailyPercent,
-          startDate: new Date().toISOString()
-        })
-      });
-      const investData = await investRes.json();
-      // If the investments endpoint isn't present, backend will return error; still continue.
-      if(!investRes.ok){
-        console.warn('Investments endpoint responded with:', investData);
-        // Continue — still post transaction so totals reflect investment
-      }
+    // 3) Full investment creation (metadata + user reference)
+const capital = Number($id('investCapital').value || 0);
 
-      // Also post a transaction so totals/balance update as before
-      await postTxn('investment', capital);
-    }
+if (capital > 0) {
+  const term = $id('investTerm').value;
+  const dailyPercent = Number($id('investDailyPercent').value || 0);
+  const profitPercentage = dailyPercent; // backend expects this field
+
+  const investRes = await fetch(`${backend}/investments/create`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      userId: currentUserId,   // VERY IMPORTANT
+      capital,
+      term,
+      profitPercentage,        // backend expects this
+      startDate: new Date().toISOString()
+    })
+  });
+
+  const investData = await investRes.json();
+  if (!investRes.ok) {
+    console.warn("Investment route error:", investData);
+  }
+
+  // Add transaction so balance updates
+  await postTxn("investment", capital);
+}
 
     hideLoader();
     alert('User updated successfully');
