@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Investments - Ann Investment Company</title>
+<style>
+  body { margin:0; font-family: Arial, sans-serif; background:#FFECCC; color:#5E1010; }
+  header { background:#5E1010; color:#FFECCC; padding:20px; display:flex; justify-content:space-between; align-items:center; }
+  header h1 { margin:0; font-size:24px; }
+  header button { background:#FFECCC; color:#5E1010; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold; }
+  .container { max-width:1200px; margin:20px auto; padding:0 20px; }
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:20px; }
+  .investment-card { background:#fff; border:2px solid #5E1010; border-radius:12px; padding:20px; transition:transform 0.2s; }
+  .investment-card:hover { transform:translateY(-3px); }
+  .investment-card h3 { margin:0 0 10px 0; font-size:18px; }
+  .investment-card p { margin:4px 0; font-size:14px; }
+  .status { font-weight:bold; }
+  .status.active { color:green; }
+  .status.completed { color:gray; }
+  .status.paused { color:orange; }
+
+  /* Loader */
+  #loadingOverlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter:blur(5px); z-index:9999; justify-content:center; align-items:center; }
+  .spinner { width:60px; height:60px; border:6px solid white; border-top-color:#5E1010; border-radius:50%; animation:spin 0.9s linear infinite; }
+  @keyframes spin { 0%{transform:rotate(0);} 100%{transform:rotate(360deg);} }
+  @media(max-width:600px){ header h1{font-size:20px;} }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>My Investments</h1>
+  <button id="logoutBtn">Logout</button>
+</header>
+
+<div class="container">
+  <div class="cards-grid" id="investmentsGrid">
+    <!-- Investment cards populated here -->
+  </div>
+</div>
+
+<div id="loadingOverlay"><div class="spinner"></div></div>
+
+<script>
+/* ---------- Config ---------- */
+const backend = "https://investment-9ub4.onrender.com/api";
+const token = localStorage.getItem("token"); // User JWT token
+
+/* ---------- Helpers ---------- */
+function showLoader(){ document.getElementById("loadingOverlay").style.display="flex"; }
+function hideLoader(){ document.getElementById("loadingOverlay").style.display="none"; }
+function fmt(n){ return Number(n).toLocaleString(undefined, {maximumFractionDigits:2}); }
+function getTermDays(term){ return term==='short'?25:term==='medium'?40:term==='long'?60:0; }
+
+/* ---------- Logout ---------- */
+document.getElementById('logoutBtn').onclick = () => {
+  localStorage.removeItem('token');
+  window.location.href = 'index.html';
+};
+
+/* ---------- Fetch investments ---------- */
+async function fetchInvestments(){
+  showLoader();
+  try{
+    const res = await fetch(`${backend}/investments`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    hideLoader();
+    if(res.ok) renderInvestments(data.investments || []);
+    else alert(data.message || 'Failed to fetch investments');
+  } catch(e){ hideLoader(); alert('Network error'); console.error(e); }
+}
+
+/* ---------- Render investments ---------- */
+function renderInvestments(investments){
+  const grid = document.getElementById('investmentsGrid');
+  grid.innerHTML = '';
+  if(investments.length === 0){
+    grid.innerHTML = '<p>No investments found.</p>';
+    return;
+  }
+
+  investments.forEach(inv=>{
+    const termDays = getTermDays(inv.term);
+    const dailyProfit = inv.capital * (inv.profitPercentage/100);
+    const totalProfit = dailyProfit * termDays;
+    const expectedReturn = inv.capital + totalProfit;
+
+    const card = document.createElement('div');
+    card.className = 'investment-card';
+    card.innerHTML = `
+      <h3>Investment #${inv._id}</h3>
+      <p><strong>Capital:</strong> $${fmt(inv.capital)}</p>
+      <p><strong>Term:</strong> ${inv.term} (${termDays} days)</p>
+      <p><strong>Daily %:</strong> ${inv.profitPercentage}%</p>
+      <p><strong>Start Date:</strong> ${new Date(inv.startDate).toLocaleDateString()}</p>
+      <p><strong>Status:</strong> <span class="status ${inv.status}">${inv.status}</span></p>
+      <p><strong>Daily Profit:</strong> $${fmt(dailyProfit)}</p>
+      <p><strong>Total Profit:</strong> $${fmt(totalProfit)}</p>
+      <p><strong>Expected Return:</strong> $${fmt(expectedReturn)}</p>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+/* ---------- Init ---------- */
+fetchInvestments();
+</script>
+
+</body>
+</html>
