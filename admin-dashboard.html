@@ -39,7 +39,10 @@
 <body>
 <header>
   <h1>Admin Dashboard</h1>
-  <button id="logoutBtn">Logout</button>
+  <div>
+    <button id="viewInvestmentsBtn">View Investments</button>
+    <button id="logoutBtn">Logout</button>
+  </div>
 </header>
 
 <div class="container">
@@ -172,6 +175,11 @@ $id('logoutBtn').onclick = () => {
   localStorage.removeItem('token');
   window.location.href = 'index.html';
 };
+
+  // View Investments button
+  document.getElementById('viewInvestmentsBtn').onclick = () => {
+    window.location.href = 'adminView.html';
+  };
 
 /* ---------- Fetch users ---------- */
 async function fetchUsers(){
