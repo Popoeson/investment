@@ -90,6 +90,7 @@ const investmentSchema = new mongoose.Schema({
   status: { type: String, enum: ['active', 'completed'], default: 'active' }
 });
 const Investment = mongoose.model("Investment"userInvestment);
+
 // --------------------------
 // Auth Middleware
 // --------------------------
@@ -378,6 +379,7 @@ res.json({ message:'User updated', user });
 } catch(e){ res.status(500).json({ message:'Failed to update user', error:e.message }); }
 });
 
+
 // --------------------------
 // Verify User (Admin Only)
 // --------------------------
@@ -409,26 +411,43 @@ res.json({ message:"User ${user.frozen?'frozen':'unfrozen'}", user });
 } catch(e){ res.status(500).json({ message:'Failed to toggle freeze', error:e.message }); }
 });
 
-// Update transactions
-app.post('/api/admin/user/:id/transactions', authMiddleware, adminMiddleware, async(req,res)=>{
-try{
-const { type, amount } = req.body; // deposit, withdrawal, investment
-const user = await User.findById(req.params.id);
-if(!user) return res.status(404).json({ message:'User not found' });
+// Admin: Update deposit/withdrawal transactions
+app.post('/api/admin/user/:id/transactions', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { type, amount } = req.body;  
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-// Update transactions
-user.transactions.push({ type, amount, date: new Date() });
+    if (!['deposit', 'withdrawal', 'profit'].includes(type)) {
+      return res.status(400).json({ message: 'Invalid transaction type for this route' });
+    }
 
-// Update totals & balance
-if(type==='deposit'){ user.totalDeposit += amount; user.balance += amount; }
-if(type==='withdrawal'){ user.totalWithdrawal += amount; user.balance -= amount; }
-if(type==='investment'){ user.totalInvestment += amount; user.balance -= amount; }
-if(type==='profit'){ user.totalProfit += amount; user.balance += amount; }
+    // Log transaction
+    user.transactions.push({ type, amount, date: new Date() });
 
-await user.save();
-res.json({ message:'Transaction added', user });
+    // Handle balances & totals
+    if (type === 'deposit') {
+      user.totalDeposit += amount;
+      user.balance += amount;
+    }
 
-} catch(e){ res.status(500).json({ message:'Failed to add transaction', error:e.message }); }
+    if (type === 'withdrawal') {
+      user.totalWithdrawal += amount;
+      user.balance -= amount;
+    }
+
+    // Optional: Manual profit addition
+    if (type === 'profit') {
+      user.totalProfit += amount;
+      user.balance += amount;
+    }
+
+    await user.save();
+    res.json({ message: 'Transaction recorded', user });
+
+  } catch (e) {
+    res.status(500).json({ message: 'Failed to record transaction', error: e.message });
+  }
 });
 
 // Delete user
