@@ -586,6 +586,23 @@ app.get('/api/admin/investments/:id', authMiddleware, adminMiddleware, async (re
   }
 });
 
+// PATCH /api/admin/investments/:id/status
+app.patch('/api/admin/investments/:id/status', authMiddleware, adminMiddleware, async (req,res)=>{
+  try{
+    const { status } = req.body; // expected 'active' or 'paused'
+    const investment = await Investment.findById(req.params.id);
+    if(!investment) return res.status(404).json({ message: 'Investment not found' });
+
+    investment.status = status; 
+    await investment.save();
+
+    res.json({ message: `Investment ${status}`, investment });
+  } catch(err){
+    console.error(err);
+    res.status(500).json({ message:'Failed to update status', error:err.message });
+  }
+});
+
 // Delete user
 app.delete('/api/admin/user/:id', authMiddleware, adminMiddleware, async(req,res)=>{
 try{
