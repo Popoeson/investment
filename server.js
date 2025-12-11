@@ -89,7 +89,7 @@ const investmentSchema = new mongoose.Schema({
   startDate: { type: Date, default: Date.now },
   status: { type: String, enum: ['active', 'completed'], default: 'active' }
 });
-const Investment = mongoose.model("Investment",userInvestment);
+const Investment = mongoose.model("Investment", investmentSchema);
 
 // --------------------------
 // Auth Middleware
