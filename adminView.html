@@ -1,216 +1,375 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Admin Investment View</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin Investments - Chartered Investment Company</title>
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #0d0d0d;
-        color: white;
-        margin: 0;
-        padding: 20px;
-    }
+  body {
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#FFECCC;
+    color:#5E1010;
+  }
 
-    h1 {
-        text-align: center;
-        margin-bottom: 20px;
-    }
+  header {
+    background:#5E1010;
+    color:#FFECCC;
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  header h1 { margin:0; font-size:24px; }
+  header button {
+    background:#FFECCC;
+    color:#5E1010;
+    border:none;
+    padding:10px 20px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+  }
 
-    /* USER LIST (VERTICAL STACK) */
-    #userList {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        transition: 0.3s ease;
-    }
+  /* Layout */
+  .container {
+    max-width:1200px;
+    margin:20px auto;
+    padding:0 20px;
+  }
 
-    .user-card {
-        background: rgba(255,255,255,0.05);
-        padding: 15px;
-        border-radius: 10px;
-        cursor: pointer;
-        border: 1px solid rgba(255,255,255,0.1);
-        transition: 0.2s;
-    }
+  .users-list {
+    display:flex;
+    overflow-x:auto;
+    gap:10px;
+    padding-bottom:10px;
+  }
 
-    .user-card:hover {
-        background: rgba(255,255,255,0.12);
-    }
+  .user-card {
+    min-width:180px;
+    background:#fff;
+    border:2px solid #5E1010;
+    border-radius:12px;
+    padding:15px;
+    cursor:pointer;
+    flex-shrink:0;
+    transition:0.2s;
+  }
+  .user-card:hover { transform:translateY(-3px); }
+  .user-card.selected { background:#5E1010; color:#FFECCC; }
 
-    /* INVESTMENT CARDS */
-    #investmentSection {
-        display: none;
-        margin-top: 20px;
-    }
+  .investments-grid {
+    margin-top:20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:15px;
+  }
 
-    .investment-card {
-        background: rgba(255,255,255,0.05);
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 12px;
-        cursor: pointer;
-        border: 1px solid rgba(255,255,255,0.1);
-        transition: 0.2s;
-    }
+  .investment-card {
+    background:white;
+    border:2px solid #5E1010;
+    border-radius:12px;
+    padding:15px;
+    cursor:pointer;
+    transition:0.2s;
+  }
+  .investment-card:hover { transform:translateY(-4px); }
 
-    .investment-card:hover {
-        background: rgba(255,255,255,0.12);
-    }
+  .status {
+    font-weight:bold;
+    text-transform:capitalize;
+  }
+  .status.active { color:green; }
+  .status.paused { color:orange; }
+  .status.completed { color:gray; }
 
-    /* GLASSMORPHISM MODAL */
-    #modal {
-        display: none;
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0,0,0,0.6);
-        backdrop-filter: blur(5px);
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-    }
+  /* Glassmorphism Modal */
+  #modalOverlay {
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.4);
+    backdrop-filter:blur(6px);
+    z-index:9999;
+    justify-content:center;
+    align-items:center;
+  }
 
-    #modalContent {
-        background: rgba(255, 255, 255, 0.12);
-        padding: 20px;
-        border-radius: 20px;
-        width: 90%;
-        max-width: 400px;
-        color: #fff;
-        border: 1px solid rgba(255,255,255,0.2);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-        backdrop-filter: blur(15px);
-        animation: pop 0.25s ease;
-    }
+  #modal {
+    width:90%;
+    max-width:420px;
+    background:rgba(255,255,255,0.2);
+    border:1px solid rgba(255,255,255,0.3);
+    backdrop-filter:blur(15px);
+    box-shadow:0 8px 30px rgba(0,0,0,0.3);
+    border-radius:20px;
+    padding:25px;
+    color:#5E1010;
+    animation:popIn 0.25s ease;
+  }
 
-    @keyframes pop {
-        from { transform: scale(0.8); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
+  @keyframes popIn {
+    from { transform:scale(0.8); opacity:0; }
+    to { transform:scale(1); opacity:1; }
+  }
 
-    .closeBtn {
-        display: block;
-        background: crimson;
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        text-align: center;
-        border-radius: 10px;
-        cursor: pointer;
-        margin-top: 15px;
-    }
+  .modal-close {
+    float:right;
+    cursor:pointer;
+    font-size:22px;
+    font-weight:bold;
+  }
 
-    .backBtn {
-        margin-bottom: 15px;
-        background: #008cff;
-        padding: 10px 15px;
-        border-radius: 10px;
-        cursor: pointer;
-        width: fit-content;
-    }
+  .modal-actions button {
+    width:100%;
+    margin-top:10px;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+    cursor:pointer;
+    font-weight:bold;
+  }
+
+  .btn-toggle { background:#ffc107; color:#5E1010; }
+  .btn-complete { background:#28a745; color:white; }
+  .btn-disabled { background:#ccc; color:#555; cursor:not-allowed; }
+
+  /* Loader */
+  #loadingOverlay {
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.5);
+    backdrop-filter:blur(5px);
+    z-index:10000;
+    justify-content:center;
+    align-items:center;
+  }
+  .spinner {
+    width:60px; height:60px;
+    border:6px solid white;
+    border-top-color:#5E1010;
+    border-radius:50%;
+    animation:spin 0.9s linear infinite;
+  }
+  @keyframes spin { 0%{transform:rotate(0);} 100%{transform:rotate(360deg);} }
 </style>
 </head>
 
 <body>
 
-<h1>Admin Investment View</h1>
+<header>
+  <h1>Admin Investment Dashboard</h1>
+  <button id="logoutBtn">Logout</button>
+</header>
 
-<div id="userList"></div>
+<div class="container">
 
-<!-- INVESTMENT SECTION -->
-<div id="investmentSection">
-    <div class="backBtn" onclick="goBack()">⬅ Back to Users</div>
-    <h2 id="selectedUserName"></h2>
-    <div id="investmentList"></div>
+  <div class="users-list" id="usersList"></div>
+
+  <h2 id="selectedUserName">Select a user</h2>
+
+  <div class="investments-grid" id="investmentsGrid"></div>
+
 </div>
 
-<!-- GLASSMORPHISM MODAL -->
-<div id="modal">
-    <div id="modalContent">
-        <h2 id="modalTitle"></h2>
-        <p id="modalBody"></p>
-        <button class="closeBtn" onclick="closeModal()">Close</button>
+<!-- Glassmorphism Modal -->
+<div id="modalOverlay">
+  <div id="modal">
+    <span class="modal-close" onclick="closeModal()">&times;</span>
+    <h2>Investment Details</h2>
+    <div id="modalContent"></div>
+
+    <div class="modal-actions">
+      <button id="toggleBtn" class="btn-toggle"></button>
+      <button id="completeBtn" class="btn-complete">Complete Investment</button>
     </div>
+  </div>
 </div>
+
+<div id="loadingOverlay"><div class="spinner"></div></div>
 
 <script>
-const BASE_URL = "https://investment-9ub4.onrender.com";
+const backend = "https://investment-9ub4.onrender.com/api/admin";
+const token = localStorage.getItem("token");
 
-async function loadUsers() {
-    try {
-        const res = await fetch(`${BASE_URL}/api/admin/users`);
-        const data = await res.json();
+function showLoader(){ document.getElementById("loadingOverlay").style.display="flex"; }
+function hideLoader(){ document.getElementById("loadingOverlay").style.display="none"; }
+function fmt(n){ return Number(n).toLocaleString(undefined,{maximumFractionDigits:2}); }
 
-        const userList = document.getElementById("userList");
-        userList.innerHTML = "";
+document.getElementById("logoutBtn").onclick = () =>{
+  localStorage.removeItem("token");
+  window.location.href="index.html";
+};
 
-        data.users.forEach(user => {
-            const card = document.createElement("div");
-            card.className = "user-card";
-            card.innerHTML = `<strong>${user.firstName} ${user.lastName}</strong><br>${user.email}`;
-            card.onclick = () => loadInvestments(user._id, user.firstName, user.lastName);
-            userList.appendChild(card);
-        });
+let selectedUserId = null;
+let currentInvestment = null;
 
-    } catch (err) {
-        console.log("Error loading users:", err);
-    }
+/* Fetch Users */
+async function fetchUsers(){
+  showLoader();
+  try{
+    const res = await fetch(`${backend}/users`, {
+      headers:{ 'Authorization':`Bearer ${token}` }
+    });
+    const data = await res.json();
+    hideLoader();
+    if(res.ok) renderUsers(data.users);
+    else alert(data.message);
+  } catch(e){
+    hideLoader(); alert("Network error");
+  }
 }
 
-async function loadInvestments(userId, firstName, lastName) {
-    document.getElementById("userList").style.display = "none";
-    document.getElementById("investmentSection").style.display = "block";
-    document.getElementById("selectedUserName").textContent = `${firstName} ${lastName}`;
+function renderUsers(users){
+  const list = document.getElementById("usersList");
+  list.innerHTML="";
 
-    try {
-        const res = await fetch(`${BASE_URL}/api/admin/investments/${userId}`);
-        const data = await res.json();
-
-        const list = document.getElementById("investmentList");
-        list.innerHTML = "";
-
-        data.investments.forEach(inv => {
-            const card = document.createElement("div");
-            card.className = "investment-card";
-            card.innerHTML = `
-                <strong>Capital:</strong> $${inv.capital}<br>
-                <strong>Status:</strong> ${inv.status}<br>
-                <strong>Profit:</strong> $${inv.profit} 
-            `;
-            card.onclick = () => openModal(inv);
-            list.appendChild(card);
-        });
-
-    } catch (err) {
-        console.log("Error loading investments:", err);
-    }
+  users.forEach(user=>{
+    const el = document.createElement("div");
+    el.className="user-card";
+    el.innerHTML = `<strong>${user.firstName} ${user.lastName}</strong><br>${user.email}`;
+    el.onclick = ()=> selectUser(user._id, `${user.firstName} ${user.lastName}`, el);
+    list.appendChild(el);
+  });
 }
 
-function openModal(inv) {
-    document.getElementById("modal").style.display = "flex";
-    document.getElementById("modalTitle").textContent = "Investment Details";
-    document.getElementById("modalBody").innerHTML = `
-        <strong>Capital:</strong> $${inv.capital}<br>
-        <strong>Profit:</strong> $${inv.profit}<br>
-        <strong>Percentage:</strong> ${inv.percentage}%<br>
-        <strong>Status:</strong> ${inv.status}<br>
-        <strong>Return:</strong> $${inv.returnAmount}
+/* Select user */
+async function selectUser(id, name, card){
+  selectedUserId = id;
+  document.getElementById("selectedUserName").innerText = name;
+
+  document.querySelectorAll(".user-card").forEach(c=>c.classList.remove("selected"));
+  card.classList.add("selected");
+
+  fetchInvestments(id);
+}
+
+/* Fetch Investments */
+async function fetchInvestments(userId){
+  showLoader();
+  try{
+    const res = await fetch(`${backend}/investments?userId=${userId}`, {
+      headers:{ 'Authorization':`Bearer ${token}` }
+    });
+    const data = await res.json();
+    hideLoader();
+    if(res.ok) renderInvestments(data.investments);
+    else alert(data.message);
+  } catch(e){ hideLoader(); alert("Error loading investments"); }
+}
+
+/* Render investments as cards */
+function renderInvestments(investments){
+  const grid = document.getElementById("investmentsGrid");
+  grid.innerHTML="";
+
+  investments.forEach(inv=>{
+    const card = document.createElement("div");
+    card.className="investment-card";
+    card.innerHTML = `
+      <h3>$${fmt(inv.capital)}</h3>
+      <p>Term: ${inv.term}</p>
+      <p>Status: <span class="status ${inv.status}">${inv.status}</span></p>
     `;
+    card.onclick = ()=> openModal(inv);
+    grid.appendChild(card);
+  });
 }
 
-function closeModal() {
-    document.getElementById("modal").style.display = "none";
+/* Open Modal */
+function openModal(inv){
+  currentInvestment = inv;
+  document.getElementById("modalOverlay").style.display="flex";
+
+  const termDays = inv.term==="short"?25:inv.term==="medium"?40:60;
+  const dailyProfit = inv.capital * (inv.profitPercentage/100);
+  const totalProfit = dailyProfit * termDays;
+  const expectedReturn = inv.capital + totalProfit;
+
+  document.getElementById("modalContent").innerHTML = `
+    <p><strong>Capital:</strong> $${fmt(inv.capital)}</p>
+    <p><strong>Term:</strong> ${inv.term}</p>
+    <p><strong>Daily Profit:</strong> $${fmt(dailyProfit)}</p>
+    <p><strong>Total Profit:</strong> $${fmt(totalProfit)}</p>
+    <p><strong>Expected Return:</strong> $${fmt(expectedReturn)}</p>
+    <p><strong>Status:</strong> <span class="status ${inv.status}">${inv.status}</span></p>
+    <p><strong>Start Date:</strong> ${new Date(inv.startDate).toLocaleDateString()}</p>
+  `;
+
+  const toggleBtn = document.getElementById("toggleBtn");
+  toggleBtn.textContent = inv.status === "active" ? "Pause Investment" : "Activate Investment";
+
+  document.getElementById("completeBtn").disabled = inv.status === "completed";
+  document.getElementById("completeBtn").className =
+      inv.status === "completed" ?
+      "btn-disabled" :
+      "btn-complete";
 }
 
-function goBack() {
-    document.getElementById("investmentSection").style.display = "none";
-    document.getElementById("userList").style.display = "flex";
+function closeModal(){
+  document.getElementById("modalOverlay").style.display="none";
 }
 
-loadUsers();
+/* Toggle Status */
+async function toggleInvestment(){
+  showLoader();
+  try{
+    const newStatus = currentInvestment.status === "active" ? "paused" : "active";
+
+    const res = await fetch(`${backend}/investments/${currentInvestment._id}/status`, {
+      method:"PATCH",
+      headers:{ "Authorization":`Bearer ${token}`, "Content-Type":"application/json" },
+      body:JSON.stringify({ status:newStatus })
+    });
+
+    const data = await res.json();
+    hideLoader();
+
+    if(res.ok){
+      closeModal();
+      fetchInvestments(selectedUserId);
+    } else {
+      alert(data.message);
+    }
+  } catch(e){
+    hideLoader();
+    alert("Network error");
+  }
+}
+
+/* Complete */
+async function completeInvestment(){
+  if(!confirm("Complete this investment?")) return;
+
+  showLoader();
+  try{
+    const res = await fetch(`${backend}/investments/${currentInvestment._id}/complete`, {
+      method:"PATCH",
+      headers:{ "Authorization":`Bearer ${token}` }
+    });
+
+    const data = await res.json();
+    hideLoader();
+
+    if(res.ok){
+      closeModal();
+      fetchInvestments(selectedUserId);
+    } else {
+      alert(data.message);
+    }
+  } catch(e){ hideLoader(); alert("Network error"); }
+}
+
+document.getElementById("toggleBtn").onclick = toggleInvestment;
+document.getElementById("completeBtn").onclick = completeInvestment;
+
+/* Init */
+fetchUsers();
 </script>
 
 </body>
