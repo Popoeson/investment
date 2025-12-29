@@ -584,49 +584,70 @@ res.json({ message:'User deleted' });
 // ==========================================
 // UPDATE PROFILE (User Only)
 // ==========================================
-app.put("/api/update-profile", authMiddleware, async (req, res) => {
-  try {
-    const allowedFields = [
-      "firstName",
-      "lastName",
-      "dob",
-      "phone",
-      "email",
-      "street",
-      "city",
-      "state",
-      "zip",
-      "selfie"   // <-- IMPORTANT: allow selfie updates
-    ];
+app.put(
+  "/api/update-profile",
+  authMiddleware,
+  upload.fields([
+    { name: "selfie", maxCount: 1 },
+    { name: "idFront", maxCount: 1 },
+    { name: "idBack", maxCount: 1 }
+  ]),
+  async (req, res) => {
+    try {
+      const allowedFields = [
+        "firstName",
+        "lastName",
+        "dob",
+        "phone",
+        "email",
+        "street",
+        "city",
+        "state",
+        "zip"
+      ];
 
-    const updates = {};
+      const updates = {};
 
-    allowedFields.forEach(field => {
-      if (req.body[field] !== undefined && req.body[field] !== "") {
-        updates[field] = req.body[field];
+      // Regular fields
+      allowedFields.forEach(field => {
+        if (req.body[field] !== undefined && req.body[field] !== "") {
+          updates[field] = req.body[field];
+        }
+      });
+
+      // Uploaded files (selfie, idFront, idBack)
+      const files = req.files || {};
+      if (files.selfie && files.selfie[0]) {
+        const result = await uploadBufferToCloudinary(files.selfie[0].buffer, `selfie_${Date.now()}`);
+        updates.selfieUrl = result.secure_url;
       }
-    });
+      if (files.idFront && files.idFront[0]) {
+        const result = await uploadBufferToCloudinary(files.idFront[0].buffer, `idFront_${Date.now()}`);
+        updates.idFrontUrl = result.secure_url;
+      }
+      if (files.idBack && files.idBack[0]) {
+        const result = await uploadBufferToCloudinary(files.idBack[0].buffer, `idBack_${Date.now()}`);
+        updates.idBackUrl = result.secure_url;
+      }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
-      { $set: updates },
-      { new: true }
-    ).select("-password");
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user.id,
+        { $set: updates },
+        { new: true }
+      ).select("-password");
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
+      if (!updatedUser) return res.status(404).json({ message: "User not found" });
+
+      return res.json({
+        message: "Profile updated successfully",
+        user: updatedUser
+      });
+    } catch (err) {
+      console.error("Update profile error:", err);
+      return res.status(500).json({ message: "Failed to update profile" });
     }
-
-    return res.json({
-      message: "Profile updated successfully",
-      user: updatedUser
-    });
-
-  } catch (err) {
-    console.error("Update profile error:", err);
-    return res.status(500).json({ message: "Failed to update profile" });
   }
-});
+);
 
 // --------------------------
 // Start server
