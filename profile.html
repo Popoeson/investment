@@ -69,39 +69,31 @@ input{
   font-size:28px; color:white; cursor:pointer;
 }
 
+/* SIDEBAR OVERLAY */
+.sidebar-overlay {
+  position: fixed; top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.4);
+  display:none; z-index:1000;
+}
 
-/* FIXED / GLASS SIDEBAR */
+/* SIDEBAR */
 .sidebar {
-  width: 250px;
-  height: 100%;
-  position: fixed;
-  top: 0; left: -250px;
-  padding: 20px;
-  box-sizing: border-box;
+  width: 250px; height: 100%;
+  position: fixed; top:0; left:-250px;
+  padding:20px; box-sizing:border-box;
   transition: left 0.3s ease;
-
-  /* GLASS EFFECT */
-  background: rgba(94, 16, 16, 0.75);
+  background: rgba(94,16,16,0.75);
   backdrop-filter: blur(10px);
-
-  color: #FFECCC;
-  z-index: 1001;
+  color: #FFECCC; z-index:1001;
 }
-
-.sidebar h3 {
-  margin-top: 0;
-}
-
+.sidebar h3 { margin-top:0; }
 .sidebar a {
-  display: block;
-  padding: 12px 0;
-  color: #FFECCC;
-  text-decoration: none;
-  font-size: 18px;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
+  display:block; padding:12px 0;
+  color:#FFECCC; text-decoration:none; font-size:18px;
+  border-bottom:1px solid rgba(255,255,255,0.2);
 }
-
-.sidebar a:last-child { border-bottom: none; }
+.sidebar a:last-child { border-bottom:none; }
 </style>
 </head>
 
@@ -116,7 +108,6 @@ input{
 </div>
 
 <div class="container">
-
   <div class="top-bar">
     <h2>My Profile</h2>
     <div class="menu-icon" onclick="openSidebar()">☰</div>
@@ -179,33 +170,22 @@ function openSidebar() {
   sidebar.style.left = "0";
   sidebarOverlay.style.display = "block";
 }
-
 function closeSidebar() {
   sidebar.style.left = "-250px";
   sidebarOverlay.style.display = "none";
 }
-
-// Close when clicking OUTSIDE
 sidebarOverlay.addEventListener("click", closeSidebar);
+sidebar.querySelectorAll("a").forEach(link => link.addEventListener("click", closeSidebar));
 
-// Optional: close when clicking a link
-sidebar.querySelectorAll("a").forEach(link => {
-  link.addEventListener("click", closeSidebar);
-});
-
+/* PROFILE */
 let currentUser = null;
 
-/* LOAD PROFILE */
 async function loadProfile(){
-  const res = await fetch(`${backend}/me`, {
-    headers:{ Authorization:`Bearer ${token}` }
-  });
-
+  const res = await fetch(`${backend}/me`, { headers:{ Authorization:`Bearer ${token}` } });
   const { user } = await res.json();
   currentUser = user;
 
   passportImg.src = user.selfieUrl || "placeholder.jpg";
-
   verifiedStatus.innerHTML = user.verified ? "✅ Verified User" : "❌ Unverified User";
   verifiedStatus.style.color = user.verified ? "green" : "red";
 
@@ -220,17 +200,11 @@ async function loadProfile(){
   zip.value = user.zip || "";
 
   // ID previews
-  if(user.idFrontUrl){
-    idFrontPreview.src = user.idFrontUrl;
-    idFrontPreview.style.display = "block";
-  }
-  if(user.idBackUrl){
-    idBackPreview.src = user.idBackUrl;
-    idBackPreview.style.display = "block";
-  }
+  if(user.idFrontUrl){ idFrontPreview.src = user.idFrontUrl; idFrontPreview.style.display="block"; }
+  if(user.idBackUrl){ idBackPreview.src = user.idBackUrl; idBackPreview.style.display="block"; }
 
-  // show section only if user has or can upload
-  document.getElementById("idSection").style.display = "block";
+  // Show ID section only in edit mode
+  idSection.style.display = "block";
 }
 loadProfile();
 
@@ -263,21 +237,16 @@ selfieInput.onchange = () => {
 /* ID PREVIEW HANDLERS */
 idFrontInput.onchange = () => previewFile(idFrontInput, idFrontPreview);
 idBackInput.onchange = () => previewFile(idBackInput, idBackPreview);
-
-function previewFile(input, img){
+function previewFile(input,img){
   const file = input.files[0];
   if(!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
-    img.src = e.target.result;
-    img.style.display = "block";
-  };
+  reader.onload = e => { img.src=e.target.result; img.style.display="block"; };
   reader.readAsDataURL(file);
 }
 
-/* SAVE */
+/* SAVE PROFILE */
 saveBtn.onclick = async () => {
-
   const formData = new FormData();
   formData.append("firstName", firstName.value);
   formData.append("lastName", lastName.value);
@@ -300,26 +269,16 @@ saveBtn.onclick = async () => {
   });
 
   const data = await res.json();
-
-  if(res.ok){
-    alert("Profile updated successfully!");
-    location.reload();
-  } else {
-    alert(data.message || "Update failed");
-  }
+  if(res.ok){ alert("Profile updated successfully!"); location.reload(); }
+  else{ alert(data.message || "Update failed"); }
 };
 
 /* IMAGE PREVIEW MODAL */
 passportImg.onclick = () => openPreview(passportImg.src);
 idFrontPreview.onclick = () => openPreview(idFrontPreview.src);
 idBackPreview.onclick = () => openPreview(idBackPreview.src);
-
-function openPreview(src){
-  previewImg.src = src;
-  previewModal.style.display = "flex";
-}
+function openPreview(src){ previewImg.src = src; previewModal.style.display="flex"; }
 function closeModal(){ previewModal.style.display="none"; }
 </script>
-
 </body>
 </html>
