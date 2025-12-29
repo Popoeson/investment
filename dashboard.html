@@ -222,6 +222,19 @@ body { margin: 0; font-family: Arial, sans-serif; background: #FFECCC; color: #5
 
 </div>
 
+<!-- ACTION MODAL -->
+<div id="actionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+    background: rgba(0,0,0,0.7); display:flex; justify-content:center; align-items:center; z-index:2000;">
+  <div style="background:#5E1010; color:#FFECCC; padding:20px; border-radius:12px; width:90%; max-width:400px; text-align:center;">
+    <h3 id="modalTitle">Enter Amount</h3>
+    <input type="number" id="modalAmount" placeholder="Enter amount" style="width:100%; padding:10px; margin:15px 0; border-radius:6px; border:1px solid #ccc;">
+    <div style="display:flex; gap:10px; justify-content:center;">
+      <button id="modalConfirm" style="padding:10px 20px; background:green; color:white; border:none; border-radius:6px; font-weight:bold;">Confirm</button>
+      <button id="modalCancel" style="padding:10px 20px; background:gray; color:white; border:none; border-radius:6px; font-weight:bold;">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div id="loadingOverlay"><div class="spinner"></div></div>
 
 <script>
@@ -231,37 +244,113 @@ const token = localStorage.getItem("token");
 const adminWhatsApp = "09122054068";
 
 /* REDIRECT IF NOT LOGGED IN */
-if(!token) window.location.href = "sign-in.html";
+if (!token) window.location.href = "sign-in.html";
 
 /* SIDEBAR */
+const sidebar = document.getElementById("sidebar");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
+
 function openSidebar() {
-  document.getElementById("sidebar").style.left = "0";
-  document.getElementById("sidebarOverlay").style.display = "block";
+  sidebar.style.left = "0";
+  sidebarOverlay.style.display = "block";
 }
 
 function closeSidebar() {
-  document.getElementById("sidebar").style.left = "-250px";
-  document.getElementById("sidebarOverlay").style.display = "none";
+  sidebar.style.left = "-250px";
+  sidebarOverlay.style.display = "none";
 }
 
-// Only close if user taps OUTSIDE sidebar
-document.getElementById("sidebarOverlay").addEventListener("click", closeSidebar);
+sidebarOverlay.addEventListener("click", closeSidebar);
 
 /* LOGOUT */
-function logout(){
+function logout() {
   localStorage.removeItem("token");
   window.location.href = "index.html";
 }
 
 /* LOADER */
-function showLoader(){ document.getElementById("loadingOverlay").style.display="flex"; }
-function hideLoader(){ document.getElementById("loadingOverlay").style.display="none"; }
+function showLoader() { document.getElementById("loadingOverlay").style.display = "flex"; }
+function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
 
-/* USER DATA */
+/* GLOBAL USER & MINIMUMS */
+let currentUser = null;
 let minDeposit = 0;
 let minWithdrawal = 0;
 
-async function loadDashboard(){
+/* MODAL ELEMENTS */
+const actionModal = document.getElementById("actionModal");
+const modalTitle = document.getElementById("modalTitle");
+const modalAmount = document.getElementById("modalAmount");
+const modalConfirm = document.getElementById("modalConfirm");
+const modalCancel = document.getElementById("modalCancel");
+let currentAction = null; // deposit | invest | withdraw
+
+function openModal(action) {
+  currentAction = action;
+  modalAmount.value = "";
+  if(action === "deposit") modalTitle.textContent = `Enter deposit amount (min $${minDeposit})`;
+  if(action === "invest") modalTitle.textContent = "Enter investment amount";
+  if(action === "withdraw") modalTitle.textContent = `Enter withdrawal amount (min $${minWithdrawal})`;
+  actionModal.style.display = "flex";
+}
+
+function closeModalAction() {
+  actionModal.style.display = "none";
+  currentAction = null;
+}
+
+modalCancel.onclick = closeModalAction;
+
+modalConfirm.onclick = () => {
+  const amountNum = Number(modalAmount.value);
+
+  if(!amountNum || isNaN(amountNum) || amountNum <= 0){
+    alert("Please enter a valid amount.");
+    return;
+  }
+
+  // Deposit validation
+  if(currentAction === "deposit" && amountNum < minDeposit){
+    alert(`Deposit must be at least $${minDeposit}`);
+    return;
+  }
+
+  // Withdraw validation
+  if(currentAction === "withdraw"){
+    if(!currentUser.verified){
+      alert("You must be a verified user to withdraw.");
+      closeModalAction();
+      return;
+    }
+    if(!currentUser.idFrontUrl || !currentUser.idBackUrl){
+      alert("Please upload both ID front and back before withdrawing.");
+      closeModalAction();
+      return;
+    }
+
+    const currentBalance = Number(document.getElementById("currentBalance").textContent.replace(/[^0-9.-]/g,""));
+    if(amountNum < minWithdrawal){
+      alert(`Minimum withdrawal is $${minWithdrawal}`);
+      return;
+    }
+    if(amountNum > currentBalance){
+      alert("Withdrawal amount exceeds your balance.");
+      return;
+    }
+  }
+
+  // Build WhatsApp message
+  let msg = "";
+  if(currentAction === "deposit") msg = `Hello Admin, I want to deposit $${amountNum}.`;
+  if(currentAction === "invest") msg = `Hello Admin, I want to invest $${amountNum}.`;
+  if(currentAction === "withdraw") msg = `Hello Admin, I want to withdraw $${amountNum}.`;
+
+  window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(msg)}`);
+  closeModalAction();
+};
+
+/* LOAD DASHBOARD */
+async function loadDashboard() {
   showLoader();
   try {
     const res = await fetch(`${backend}/me`, {
@@ -271,51 +360,41 @@ async function loadDashboard(){
     const data = await res.json();
     hideLoader();
 
-    if(res.status === 401){
+    if (res.status === 401) {
       alert("Session expired. Please login again.");
       logout();
       return;
     }
 
-    const user = data.user;
-
-    minDeposit = user.minDeposit || 0;
-    minWithdrawal = user.minWithdrawal || 0;
+    currentUser = data.user;
+    minDeposit = currentUser.minDeposit || 0;
+    minWithdrawal = currentUser.minWithdrawal || 0;
 
     document.getElementById("welcomeUser").textContent =
-      `Welcome, ${user.firstName} ${user.lastName}`;
-
+      `Welcome, ${currentUser.firstName} ${currentUser.lastName}`;
     document.getElementById("currentBalance").textContent =
-      `$${(user.balance || 0).toLocaleString()}`;
-
+      `$${(currentUser.balance || 0).toLocaleString()}`;
     document.getElementById("totalDeposit").textContent =
-      `$${(user.totalDeposit || 0).toLocaleString()}`;
-
+      `$${(currentUser.totalDeposit || 0).toLocaleString()}`;
     document.getElementById("totalInvestment").textContent =
-      `$${(user.totalInvestment || 0).toLocaleString()}`;
-
+      `$${(currentUser.totalInvestment || 0).toLocaleString()}`;
     document.getElementById("totalWithdrawal").textContent =
-      `$${(user.totalWithdrawal || 0).toLocaleString()}`;
-
+      `$${(currentUser.totalWithdrawal || 0).toLocaleString()}`;
     document.getElementById("totalProfit").textContent =
-      `$${(user.totalProfit || 0).toLocaleString()}`;
+      `$${(currentUser.totalProfit || 0).toLocaleString()}`;
 
     const list = document.getElementById("transactionList");
     list.innerHTML = "";
-
-    // Sort transactions newest first
-    (user.transactions || [])
+    (currentUser.transactions || [])
       .sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt))
       .forEach(t => {
         const div = document.createElement("div");
         div.className = "transaction-item";
-
         const colorClass =
           t.type === "deposit" ? "text-deposit" :
           t.type === "profit" ? "text-profit" :
           t.type === "investment" ? "text-invest" :
           "text-withdraw";
-
         div.innerHTML = `
           <span class="${colorClass}">
             ${t.type.toUpperCase()} — $${t.amount.toLocaleString()}
@@ -326,78 +405,21 @@ async function loadDashboard(){
       });
 
     attachActionButtons();
-  }
-  catch (e) {
+  } catch (e) {
     hideLoader();
+    console.error(e);
     alert("Network error");
   }
 }
 
+/* ATTACH BUTTONS TO OPEN MODAL */
 function attachActionButtons() {
-  document.getElementById("depositBtn").onclick = () => {
-    const amount = prompt(`Minimum deposit is $${minDeposit}. Enter deposit amount:`, minDeposit);
-    if (amount && Number(amount) >= minDeposit) {
-      const msg = `Hello Admin, I want to deposit $${amount}.`;
-      window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(msg)}`);
-    }
-  };
-
-  document.getElementById("investBtn").onclick = () => {
-    const amount = prompt("Enter investment amount:");
-    if (amount) {
-      const msg = `Hello Admin, I want to invest $${amount}.`;
-      window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(msg)}`);
-    }
-  };
-
-  document.getElementById("withdrawBtn").onclick = () => {
-    // Ensure currentUser is loaded
-    if (!currentUser) {
-      alert("User data not loaded. Please refresh the page.");
-      return;
-    }
-
-    // Check if user is verified
-    if (!currentUser.verified) {
-      alert("You must be a verified user to withdraw.");
-      return;
-    }
-
-    // Check if ID is uploaded
-    if (!currentUser.idFrontUrl || !currentUser.idBackUrl) {
-      alert("Please upload both ID front and back before withdrawing.");
-      return;
-    }
-
-    const currentBalance = Number(
-      document.getElementById("currentBalance").textContent.replace(/[^0-9.-]/g, "")
-    );
-
-    // Check minimum withdrawal
-    if (currentBalance < minWithdrawal) {
-      alert(`Your balance is below the minimum withdrawal amount: $${minWithdrawal}`);
-      return;
-    }
-
-    const amount = prompt(`Enter withdrawal amount (minimum $${minWithdrawal}):`);
-    const amountNum = Number(amount);
-
-    if (!amount || isNaN(amountNum) || amountNum < minWithdrawal) {
-      alert(`Invalid amount. Minimum withdrawal is $${minWithdrawal}.`);
-      return;
-    }
-
-    if (amountNum > currentBalance) {
-      alert("Withdrawal amount exceeds your current balance.");
-      return;
-    }
-
-    const msg = `Hello Admin, I want to withdraw $${amountNum}.`;
-    window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(msg)}`);
-  };
+  document.getElementById("depositBtn").onclick = () => openModal("deposit");
+  document.getElementById("investBtn").onclick = () => openModal("invest");
+  document.getElementById("withdrawBtn").onclick = () => openModal("withdraw");
 }
 
+/* INIT */
 loadDashboard();
-</script>
 </body>
 </html>
