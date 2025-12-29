@@ -172,18 +172,26 @@ const token = localStorage.getItem("token");
 if(!token) location.href = "sign-in.html";
 
 /* SIDEBAR */
+const sidebar = document.getElementById("sidebar");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
+
 function openSidebar() {
-  document.getElementById("sidebar").style.left = "0";
-  document.getElementById("sidebarOverlay").style.display = "block";
+  sidebar.style.left = "0";
+  sidebarOverlay.style.display = "block";
 }
 
 function closeSidebar() {
-  document.getElementById("sidebar").style.left = "-250px";
-  document.getElementById("sidebarOverlay").style.display = "none";
+  sidebar.style.left = "-250px";
+  sidebarOverlay.style.display = "none";
 }
 
-// Only close if user taps OUTSIDE sidebar
-document.getElementById("sidebarOverlay").addEventListener("click", closeSidebar);
+// Close when clicking OUTSIDE
+sidebarOverlay.addEventListener("click", closeSidebar);
+
+// Optional: close when clicking a link
+sidebar.querySelectorAll("a").forEach(link => {
+  link.addEventListener("click", closeSidebar);
+});
 
 let currentUser = null;
 
