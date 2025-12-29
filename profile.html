@@ -173,13 +173,17 @@ if(!token) location.href = "sign-in.html";
 
 /* SIDEBAR */
 function openSidebar() {
-  sidebar.style.left = "0";
-  sidebarOverlay.style.display = "block";
+  document.getElementById("sidebar").style.left = "0";
+  document.getElementById("sidebarOverlay").style.display = "block";
 }
+
 function closeSidebar() {
-  sidebar.style.left = "-250px"; // same as CSS
-  sidebarOverlay.style.display = "none";
+  document.getElementById("sidebar").style.left = "-250px";
+  document.getElementById("sidebarOverlay").style.display = "none";
 }
+
+// Only close if user taps OUTSIDE sidebar
+document.getElementById("sidebarOverlay").addEventListener("click", closeSidebar);
 
 let currentUser = null;
 
