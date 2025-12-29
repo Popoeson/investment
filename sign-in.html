@@ -81,10 +81,56 @@ label{ font-weight:bold; margin-bottom:5px; }
   border-radius:12px;
   text-align:center;
 }
+
+/* ===========================
+   LOADING OVERLAY + BLUR
+   =========================== */
+#loaderOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(10,10,10,.45);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:9999;
+}
+
+#loaderOverlay p{
+  color:#fff;
+  margin-top:10px;
+  letter-spacing:.4px;
+}
+
+.loader{
+  width:48px;
+  height:48px;
+  border:4px solid rgba(255,255,255,.3);
+  border-top-color:#00ffa6;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin{ to{ transform:rotate(360deg);} }
+
+/* blur page when loading */
+body.loading .container{
+  filter:blur(4px);
+  pointer-events:none;
+  user-select:none;
+}
 </style>
 </head>
 
 <body>
+
+<!-- LOADER -->
+<div id="loaderOverlay">
+  <div class="loader"></div>
+  <p>Processing...</p>
+</div>
 
 <div class="container">
 
@@ -172,8 +218,17 @@ const backend = "https://investment-9ub4.onrender.com/api";
 const registerBtn = document.getElementById("registerBtn");
 const loginBtn = document.getElementById("loginBtn");
 const registerForm = document.getElementById("registerForm");
-const loginForm = document.getElementById("loginForm");
-const popup = document.getElementById("popup");
+const loginForm   = document.getElementById("loginForm");
+const popup       = document.getElementById("popup");
+
+function showLoader(){
+  document.body.classList.add("loading");
+  document.getElementById("loaderOverlay").style.display = "flex";
+}
+function hideLoader(){
+  document.body.classList.remove("loading");
+  document.getElementById("loaderOverlay").style.display = "none";
+}
 
 // toggle
 registerBtn.onclick = () => {
@@ -190,8 +245,14 @@ loginBtn.onclick = () => {
 };
 
 // steps
-function nextStep(c){ document.getElementById(`step${c}`).classList.remove("active"); document.getElementById(`step${c+1}`).classList.add("active"); }
-function prevStep(c){ document.getElementById(`step${c}`).classList.remove("active"); document.getElementById(`step${c-1}`).classList.add("active"); }
+function nextStep(c){
+  document.getElementById(`step${c}`).classList.remove("active");
+  document.getElementById(`step${c+1}`).classList.add("active");
+}
+function prevStep(c){
+  document.getElementById(`step${c}`).classList.remove("active");
+  document.getElementById(`step${c-1}`).classList.add("active");
+}
 
 // register
 async function submitRegistration(){
@@ -212,6 +273,8 @@ async function submitRegistration(){
     password:password.value
   };
 
+  showLoader();
+
   try{
     const res = await fetch(`${backend}/register`, {
       method:"POST",
@@ -229,11 +292,14 @@ async function submitRegistration(){
     }
   } catch(e){
     alert("Network error");
+  } finally{
+    hideLoader();
   }
 }
 
 // login
 async function submitLogin(){
+  showLoader();
   try {
     const res = await fetch(`${backend}/login`, {
       method:"POST",
@@ -260,6 +326,8 @@ async function submitLogin(){
     }
   } catch(e){
     alert("Network error");
+  } finally{
+    hideLoader();
   }
 }
 
