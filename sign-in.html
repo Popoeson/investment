@@ -1,56 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Sign In - Ann Investment Company</title>
 
 <style>
-/* --- your styles stay the same --- */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(120deg, #5E1010 0%, #FFECCC 100%);
-  color: #5E1010;
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:linear-gradient(120deg,#5E1010,#FFECCC);
+  color:#5E1010;
 }
-.container {
-  max-width: 500px;
-  margin: 60px auto;
-  background: #fff;
-  padding: 40px 30px;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-.form-header { display:flex; justify-content:space-between; margin-bottom:30px; }
-.form-header button { background:none; border:none; font-weight:bold; color:#5E1010; cursor:pointer; }
-.form-header button.active { border-bottom:3px solid #5E1010; padding-bottom:4px; }
-form { display:flex; flex-direction:column; }
-form input, form select, form label { margin-bottom:15px; }
-form input[type="text"], form input[type="email"], form input[type="password"], form input[type="tel"], form input[type="date"] {
-  padding:12px; border-radius:6px; border:1px solid #ccc; width:100%;
-}
-form label { font-weight:bold; margin-bottom:5px; }
-form button.submit-btn, .form-step button.next-btn, .form-step button.back-btn {
-  background:#5E1010; color:#FFECCC; padding:12px; border:none; border-radius:6px; cursor:pointer;
-}
-#loginForm { display:none; opacity:0; transition:0.5s; animation:dropIn 0.5s forwards; }
-#loginForm.active { display:flex; opacity:1; }
-.form-step { display:none; flex-direction:column; animation:dropIn 0.5s forwards; }
-.form-step.active { display:flex; }
-@keyframes dropIn { from{opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);} }
 
-#popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;}
-.popup-content{background:#fff;width:90%;max-width:400px;padding:25px;border-radius:12px;text-align:center;color:#5E1010;}
+.container{
+  max-width:500px;
+  margin:60px auto;
+  background:#fff;
+  padding:40px 30px;
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,.15);
+}
 
-#loadingOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);backdrop-filter:blur(5px);justify-content:center;align-items:center;}
-.spinner{width:60px;height:60px;border:6px solid white;border-top-color:#5E1010;border-radius:50%;animation:spin .9s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
+.form-header{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:25px;
+}
+.form-header button{
+  background:none;
+  border:none;
+  font-weight:bold;
+  font-size:16px;
+  cursor:pointer;
+  color:#5E1010;
+}
+.form-header button.active{
+  border-bottom:3px solid #5E1010;
+  padding-bottom:4px;
+}
+
+form{ display:flex; flex-direction:column; }
+
+input{
+  padding:12px;
+  border:1px solid #ccc;
+  border-radius:6px;
+  margin-bottom:14px;
+}
+
+label{ font-weight:bold; margin-bottom:5px; }
+
+.submit-btn, .next-btn, .back-btn{
+  background:#5E1010;
+  color:#FFECCC;
+  padding:12px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+.submit-btn:hover, .next-btn:hover, .back-btn:hover{ opacity:.9; }
+
+.form-step{ display:none; }
+.form-step.active{ display:flex; flex-direction:column; }
+
+#loginForm{ display:none; }
+#loginForm.active{ display:flex; flex-direction:column; }
+
+#popup{
+  position:fixed; top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+.popup-content{
+  background:#fff;
+  padding:25px;
+  border-radius:12px;
+  text-align:center;
+}
 </style>
 </head>
 
 <body>
-
-<div id="loadingOverlay"><div class="spinner"></div></div>
 
 <div class="container">
 
@@ -64,24 +98,43 @@ form button.submit-btn, .form-step button.next-btn, .form-step button.back-btn {
 
     <!-- STEP 1 -->
     <div class="form-step active" id="step1">
-      <label>First Name</label><input type="text" id="firstName" required>
-      <label>Last Name</label><input type="text" id="lastName" required>
-      <label>Email</label><input type="email" id="email" required>
-      <label>Phone</label><input type="tel" id="phone" required>
-      <label>Date of Birth</label><input type="date" id="dob" required>
+      <label>First Name</label>
+      <input id="firstName" required>
+
+      <label>Last Name</label>
+      <input id="lastName" required>
+
+      <label>Email</label>
+      <input type="email" id="email" required>
+
+      <label>Phone</label>
+      <input type="tel" id="phone" required>
+
+      <label>Date of Birth</label>
+      <input type="date" id="dob" required>
 
       <button type="button" class="next-btn" onclick="nextStep(1)">Continue</button>
     </div>
 
     <!-- STEP 2 -->
     <div class="form-step" id="step2">
-      <label>Street</label><input type="text" id="street" required>
-      <label>City</label><input type="text" id="city" required>
-      <label>State</label><input type="text" id="state" required>
-      <label>ZIP</label><input type="text" id="zip" required>
+      <label>Street</label>
+      <input id="street">
 
-      <label>Password</label><input type="password" id="password" required>
-      <label>Confirm Password</label><input type="password" id="confirmPassword" required>
+      <label>City</label>
+      <input id="city">
+
+      <label>State</label>
+      <input id="state">
+
+      <label>ZIP</label>
+      <input id="zip">
+
+      <label>Password</label>
+      <input type="password" id="password" required>
+
+      <label>Confirm Password</label>
+      <input type="password" id="confirmPassword" required>
 
       <div style="display:flex; justify-content:space-between;">
         <button type="button" class="submit-btn" onclick="submitRegistration()">Register</button>
@@ -93,18 +146,22 @@ form button.submit-btn, .form-step button.next-btn, .form-step button.back-btn {
 
   <!-- LOGIN -->
   <form id="loginForm">
-    <label>Email</label><input type="email" id="loginEmail" required>
-    <label>Password</label><input type="password" id="loginPassword" required>
-    <button type="button" class="submit-btn" id="loginBtnSubmit">Login</button>
+    <label>Email</label>
+    <input type="email" id="loginEmail" required>
+
+    <label>Password</label>
+    <input type="password" id="loginPassword" required>
+
+    <button type="button" class="submit-btn" onclick="submitLogin()">Login</button>
   </form>
 
 </div>
 
-<!-- SUCCESS POPUP -->
+<!-- POPUP -->
 <div id="popup">
   <div class="popup-content">
     <h3>Registration Successful!</h3>
-    <p>Your account has been created.</p>
+    <p>Your identity is being verified.</p>
     <button onclick="closePopup()">Close</button>
   </div>
 </div>
@@ -112,21 +169,37 @@ form button.submit-btn, .form-step button.next-btn, .form-step button.back-btn {
 <script>
 const backend = "https://investment-9ub4.onrender.com/api";
 
+const registerBtn = document.getElementById("registerBtn");
+const loginBtn = document.getElementById("loginBtn");
+const registerForm = document.getElementById("registerForm");
+const loginForm = document.getElementById("loginForm");
+const popup = document.getElementById("popup");
+
+// toggle
+registerBtn.onclick = () => {
+  registerForm.style.display = "flex";
+  loginForm.classList.remove("active");
+  registerBtn.classList.add("active");
+  loginBtn.classList.remove("active");
+};
+loginBtn.onclick = () => {
+  registerForm.style.display = "none";
+  loginForm.classList.add("active");
+  loginBtn.classList.add("active");
+  registerBtn.classList.remove("active");
+};
+
+// steps
 function nextStep(c){ document.getElementById(`step${c}`).classList.remove("active"); document.getElementById(`step${c+1}`).classList.add("active"); }
 function prevStep(c){ document.getElementById(`step${c}`).classList.remove("active"); document.getElementById(`step${c-1}`).classList.add("active"); }
 
-function showLoader(){ document.getElementById("loadingOverlay").style.display="flex"; }
-function hideLoader(){ document.getElementById("loadingOverlay").style.display="none"; }
-
+// register
 async function submitRegistration(){
   if(password.value !== confirmPassword.value){
-    alert("Passwords do not match");
-    return;
+    return alert("Passwords do not match");
   }
 
-  showLoader();
-
-  const data = {
+  const body = {
     firstName:firstName.value,
     lastName:lastName.value,
     email:email.value,
@@ -140,51 +213,57 @@ async function submitRegistration(){
   };
 
   try{
-    const res = await fetch(`${backend}/register`,{
+    const res = await fetch(`${backend}/register`, {
       method:"POST",
       headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify(data)
+      body:JSON.stringify(body)
     });
 
-    const result = await res.json();
-    hideLoader();
+    const data = await res.json();
 
     if(res.ok){
       popup.style.display="flex";
-      document.getElementById("registerForm").reset();
+      registerForm.reset();
     } else {
-      alert(result.message || "Registration failed");
+      alert(data.message || "Registration failed");
     }
-
   } catch(e){
-    hideLoader();
     alert("Network error");
   }
 }
 
-// LOGIN
-loginBtnSubmit.onclick = async () => {
-  showLoader();
-  const res = await fetch(`${backend}/login`,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ email:loginEmail.value, password:loginPassword.value })
-  });
+// login
+async function submitLogin(){
+  try {
+    const res = await fetch(`${backend}/login`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({
+        email:loginEmail.value,
+        password:loginPassword.value
+      })
+    });
 
-  const data = await res.json();
-  hideLoader();
+    const data = await res.json();
 
-  if(res.ok){
-    localStorage.setItem("token", data.token);
-    if(data.user) localStorage.setItem("userData", JSON.stringify(data.user));
-    window.location.href = data.user.role === "admin" ? "admin-dashboard.html" : "dashboard.html";
-  } else {
-    alert(data.message || "Invalid login");
+    if(res.ok){
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userData", JSON.stringify(data.user));
+
+      if(data.user.role === "admin"){
+        location.href = "admin-dashboard.html";
+      } else {
+        location.href = "dashboard.html";
+      }
+    } else {
+      alert(data.message || "Invalid login");
+    }
+  } catch(e){
+    alert("Network error");
   }
-};
+}
 
 function closePopup(){ popup.style.display="none"; }
 </script>
-
 </body>
 </html>
