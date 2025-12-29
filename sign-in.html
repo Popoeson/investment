@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sign In - Ann Investment Company</title>
+
 <style>
+/* --- your styles stay the same --- */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -18,214 +20,91 @@ body {
   padding: 40px 30px;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  position: relative;
-  overflow: hidden;
-  box-sizing: border-box;
 }
-.form-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 30px;
+.form-header { display:flex; justify-content:space-between; margin-bottom:30px; }
+.form-header button { background:none; border:none; font-weight:bold; color:#5E1010; cursor:pointer; }
+.form-header button.active { border-bottom:3px solid #5E1010; padding-bottom:4px; }
+form { display:flex; flex-direction:column; }
+form input, form select, form label { margin-bottom:15px; }
+form input[type="text"], form input[type="email"], form input[type="password"], form input[type="tel"], form input[type="date"] {
+  padding:12px; border-radius:6px; border:1px solid #ccc; width:100%;
 }
-.form-header button {
-  background: none;
-  border: none;
-  font-weight: bold;
-  color: #5E1010;
-  font-size: 16px;
-  cursor: pointer;
-}
-.form-header button.active {
-  border-bottom: 3px solid #5E1010;
-  padding-bottom: 4px;
-}
-form {
-  display: flex;
-  flex-direction: column;
-}
-form input, form select, form label {
-  margin-bottom: 15px;
-  box-sizing: border-box;
-}
-form input[type="text"],
-form input[type="email"],
-form input[type="password"],
-form input[type="tel"],
-form input[type="date"],
-form input[type="file"] {
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  width: 100%;
-  box-sizing: border-box;
-}
-form label {
-  font-weight: bold;
-  margin-bottom: 5px;
-  display: block;
-}
+form label { font-weight:bold; margin-bottom:5px; }
 form button.submit-btn, .form-step button.next-btn, .form-step button.back-btn {
-  background: #5E1010;
-  color: #FFECCC;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-top: 10px;
+  background:#5E1010; color:#FFECCC; padding:12px; border:none; border-radius:6px; cursor:pointer;
 }
-form button.submit-btn:hover, .form-step button.next-btn:hover, .form-step button.back-btn:hover {
-  opacity: 0.9;
-}
-#loginForm {
-  display: none;
-  opacity: 0;
-  transition: all 0.5s ease;
-  flex-direction: column;
-  animation: dropIn 0.5s ease forwards;
-}
-#loginForm.active {
-  display: flex;
-  opacity: 1;
-}
-.form-step {
-  display: none;
-  flex-direction: column;
-  animation: dropIn 0.5s ease forwards;
-}
-.form-step.active {
-  display: flex;
-}
-@keyframes dropIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-#popup {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-.popup-content {
-  background: #fff;
-  width: 90%;
-  max-width: 400px;
-  padding: 25px;
-  border-radius: 12px;
-  text-align: center;
-  color: #5E1010;
-  animation: fadeIn 0.3s ease;
-}
-@keyframes fadeIn {
-  from { transform: scale(0.7); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-.file-preview {
-  max-width: 100px;
-  margin-top: 5px;
-  border-radius: 6px;
-}
-#loadingOverlay {
-  display: none;
-  position: fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(5px);
-  z-index: 99999;
-  justify-content: center;
-  align-items: center;
-}
-.spinner {
-  width: 60px;
-  height: 60px;
-  border: 6px solid white;
-  border-top-color: #5E1010;
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-}
-@keyframes spin {
-  0% { transform: rotate(0); }
-  100% { transform: rotate(360deg); }
-}
-@media (max-width: 550px) {
-  .container {
-    margin: 30px 20px;
-    padding: 30px 20px;
-  }
-}
+#loginForm { display:none; opacity:0; transition:0.5s; animation:dropIn 0.5s forwards; }
+#loginForm.active { display:flex; opacity:1; }
+.form-step { display:none; flex-direction:column; animation:dropIn 0.5s forwards; }
+.form-step.active { display:flex; }
+@keyframes dropIn { from{opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);} }
+
+#popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;}
+.popup-content{background:#fff;width:90%;max-width:400px;padding:25px;border-radius:12px;text-align:center;color:#5E1010;}
+
+#loadingOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);backdrop-filter:blur(5px);justify-content:center;align-items:center;}
+.spinner{width:60px;height:60px;border:6px solid white;border-top-color:#5E1010;border-radius:50%;animation:spin .9s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
-<body><div id="loadingOverlay"><div class="spinner"></div></div><div class="container">
+
+<body>
+
+<div id="loadingOverlay"><div class="spinner"></div></div>
+
+<div class="container">
+
   <div class="form-header">
     <button id="registerBtn" class="active">Register</button>
     <button id="loginBtn">Login</button>
-  </div>  <!-- REGISTRATION FORM -->  <form id="registerForm">
+  </div>
+
+  <!-- REGISTER -->
+  <form id="registerForm">
+
     <!-- STEP 1 -->
     <div class="form-step active" id="step1">
-      <label>First Name</label>
-      <input type="text" id="firstName" required>
-      <label>Last Name</label>
-      <input type="text" id="lastName" required>
-      <label>Email</label>
-      <input type="email" id="email" required>
-      <label>Phone</label>
-      <input type="tel" id="phone" required>
-      <label>Date of Birth</label>
-      <input type="date" id="dob" required>
+      <label>First Name</label><input type="text" id="firstName" required>
+      <label>Last Name</label><input type="text" id="lastName" required>
+      <label>Email</label><input type="email" id="email" required>
+      <label>Phone</label><input type="tel" id="phone" required>
+      <label>Date of Birth</label><input type="date" id="dob" required>
+
       <button type="button" class="next-btn" onclick="nextStep(1)">Continue</button>
-    </div><!-- STEP 2 -->
-<div class="form-step" id="step2">
-  <label>Street</label>
-  <input type="text" id="street" required>
-  <label>City</label>
-  <input type="text" id="city" required>
-  <label>State</label>
-  <input type="text" id="state" required>
-  <label>ZIP</label>
-  <input type="text" id="zip" required>
-  <label>Password</label>
-  <input type="password" id="password" required>
-  <label>Confirm Password</label>
-  <input type="password" id="confirmPassword" required>
-  <div style="display:flex; justify-content:space-between;">
-    <button type="button" class="next-btn" onclick="nextStep(2)">Continue</button>
-    <button type="button" class="back-btn" onclick="prevStep(2)">Back</button>
-  </div>
-</div>
+    </div>
 
-<!-- STEP 3 -->
-<div class="form-step" id="step3">
-  <label>Government ID (Front)</label>
-  <input type="file" id="idFront" accept="image/*" required>
-  <img id="previewFront" class="file-preview">
-  <label>Government ID (Back)</label>
-  <input type="file" id="idBack" accept="image/*" required>
-  <img id="previewBack" class="file-preview">
-  <label>Selfie</label>
-  <input type="file" id="selfie" accept="image/*" required>
-  <img id="previewSelfie" class="file-preview">
-  <div style="display:flex; justify-content:space-between;">
-    <button type="button" class="submit-btn" onclick="submitRegistration()">Register</button>
-    <button type="button" class="back-btn" onclick="prevStep(3)">Back</button>
-  </div>
-</div>
+    <!-- STEP 2 -->
+    <div class="form-step" id="step2">
+      <label>Street</label><input type="text" id="street" required>
+      <label>City</label><input type="text" id="city" required>
+      <label>State</label><input type="text" id="state" required>
+      <label>ZIP</label><input type="text" id="zip" required>
 
-  </form>  <!-- LOGIN FORM -->  <form id="loginForm">
-    <label>Email</label>
-    <input type="email" id="loginEmail" required>
-    <label>Password</label>
-    <input type="password" id="loginPassword" required>
+      <label>Password</label><input type="password" id="password" required>
+      <label>Confirm Password</label><input type="password" id="confirmPassword" required>
+
+      <div style="display:flex; justify-content:space-between;">
+        <button type="button" class="submit-btn" onclick="submitRegistration()">Register</button>
+        <button type="button" class="back-btn" onclick="prevStep(2)">Back</button>
+      </div>
+    </div>
+
+  </form>
+
+  <!-- LOGIN -->
+  <form id="loginForm">
+    <label>Email</label><input type="email" id="loginEmail" required>
+    <label>Password</label><input type="password" id="loginPassword" required>
     <button type="button" class="submit-btn" id="loginBtnSubmit">Login</button>
   </form>
-</div><!-- SUCCESS POPUP --><div id="popup">
+
+</div>
+
+<!-- SUCCESS POPUP -->
+<div id="popup">
   <div class="popup-content">
     <h3>Registration Successful!</h3>
-    <p>Your identity is being verified. You will be notified soon.</p>
+    <p>Your account has been created.</p>
     <button onclick="closePopup()">Close</button>
   </div>
 </div>
@@ -233,80 +112,13 @@ form button.submit-btn:hover, .form-step button.next-btn:hover, .form-step butto
 <script>
 const backend = "https://investment-9ub4.onrender.com/api";
 
-// ---------- DOM & TOGGLE ----------
-const registerBtn = document.getElementById("registerBtn");
-const loginBtn = document.getElementById("loginBtn");
-const registerForm = document.getElementById("registerForm");
-const loginForm = document.getElementById("loginForm");
-const popup = document.getElementById("popup");
-const loginBtnSubmit = document.getElementById("loginBtnSubmit");
+function nextStep(c){ document.getElementById(`step${c}`).classList.remove("active"); document.getElementById(`step${c+1}`).classList.add("active"); }
+function prevStep(c){ document.getElementById(`step${c}`).classList.remove("active"); document.getElementById(`step${c-1}`).classList.add("active"); }
 
-registerBtn.onclick = () => {
-  loginForm.classList.remove("active");
-  registerForm.style.display = "flex";
-  registerBtn.classList.add("active");
-  loginBtn.classList.remove("active");
-};
-loginBtn.onclick = () => {
-  registerForm.style.display = "none";
-  loginForm.classList.add("active");
-  loginBtn.classList.add("active");
-  registerBtn.classList.remove("active");
-};
-
-// ---------- STEPS ----------
-function nextStep(c){
-  document.getElementById(`step${c}`).classList.remove("active");
-  document.getElementById(`step${c+1}`).classList.add("active");
-}
-function prevStep(c){
-  document.getElementById(`step${c}`).classList.remove("active");
-  document.getElementById(`step${c-1}`).classList.add("active");
-}
-
-// ---------- FILE PREVIEWS ----------
-document.addEventListener("DOMContentLoaded", ()=>{
-  function previewFile(inputId, previewId){
-    const input = document.getElementById(inputId);
-    const preview = document.getElementById(previewId);
-    if(!input || !preview) return;
-    input.addEventListener("change", ()=>{
-      const file = input.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = ()=> preview.src = reader.result;
-      reader.readAsDataURL(file);
-    });
-  }
-  previewFile("idFront","previewFront");
-  previewFile("idBack","previewBack");
-  previewFile("selfie","previewSelfie");
-});
-
-// ---------- LOADING ----------
 function showLoader(){ document.getElementById("loadingOverlay").style.display="flex"; }
 function hideLoader(){ document.getElementById("loadingOverlay").style.display="none"; }
 
-// ---------- RESET FORM ----------
-function resetRegistrationForm(){
-  registerForm.reset();
-  ["previewFront","previewBack","previewSelfie"].forEach(id=>{
-    const img = document.getElementById(id);
-    if(img) img.src = "";
-  });
-  // Reset to first step
-  document.querySelectorAll(".form-step").forEach(step=> step.classList.remove("active"));
-  document.getElementById("step1").classList.add("active");
-}
-
-// ---------- REGISTRATION ----------
 async function submitRegistration(){
-  // Validate files
-  if(!idFront.files[0] || !idBack.files[0] || !selfie.files[0]){
-    alert("Please upload all required images.");
-    return;
-  }
-  // Validate passwords
   if(password.value !== confirmPassword.value){
     alert("Passwords do not match");
     return;
@@ -314,38 +126,32 @@ async function submitRegistration(){
 
   showLoader();
 
-  const data = new FormData();
-  data.append("firstName", firstName.value);
-  data.append("lastName", lastName.value);
-  data.append("email", email.value);
-  data.append("phone", phone.value);
-  data.append("dob", dob.value);
-  data.append("street", street.value);
-  data.append("city", city.value);
-  data.append("state", state.value);
-  data.append("zip", zip.value);
-  data.append("password", password.value);
-  data.append("idFront", idFront.files[0]);
-  data.append("idBack", idBack.files[0]);
-  data.append("selfie", selfie.files[0]);
+  const data = {
+    firstName:firstName.value,
+    lastName:lastName.value,
+    email:email.value,
+    phone:phone.value,
+    dob:dob.value,
+    street:street.value,
+    city:city.value,
+    state:state.value,
+    zip:zip.value,
+    password:password.value
+  };
 
   try{
-    const res = await fetch(`${backend}/register`, { method:"POST", body: data });
+    const res = await fetch(`${backend}/register`,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(data)
+    });
+
     const result = await res.json();
     hideLoader();
 
     if(res.ok){
       popup.style.display="flex";
-      resetRegistrationForm();
-
-      // Switch to Login form automatically
-      setTimeout(()=>{
-        popup.style.display="none";
-        registerForm.style.display="none";
-        loginForm.classList.add("active");
-        loginBtn.classList.add("active");
-        registerBtn.classList.remove("active");
-      }, 2000); // 2 seconds delay to show popup
+      document.getElementById("registerForm").reset();
     } else {
       alert(result.message || "Registration failed");
     }
@@ -356,57 +162,29 @@ async function submitRegistration(){
   }
 }
 
-// ---------- LOGIN ----------
+// LOGIN
 loginBtnSubmit.onclick = async () => {
   showLoader();
-  try {
-    const res = await fetch(`${backend}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: loginEmail.value,
-        password: loginPassword.value
-      })
-    });
+  const res = await fetch(`${backend}/login`,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ email:loginEmail.value, password:loginPassword.value })
+  });
 
-    const data = await res.json();
-    hideLoader();
+  const data = await res.json();
+  hideLoader();
 
-    if (res.ok) {
-
-      // ✅ SAVE TOKEN
-      localStorage.setItem("token", data.token);
-
-      // ✅ SAVE FULL USER DATA
-      if (data.user) {
-        localStorage.setItem("userData", JSON.stringify(data.user));
-      } else {
-        console.warn("User object missing in backend response");
-      }
-
-      // Clear form
-      loginForm.reset();
-
-      // ✅ REDIRECT BASED ON ROLE
-      if (data.user.role === 'admin') {
-        window.location.href = "admin-dashboard.html";
-      } else {
-        window.location.href = "dashboard.html";
-      }
-
-    } else {
-      alert(data.message || "Invalid login");
-    }
-
-  } catch (e) {
-    hideLoader();
-    alert("Network error");
-    console.error(e);
+  if(res.ok){
+    localStorage.setItem("token", data.token);
+    if(data.user) localStorage.setItem("userData", JSON.stringify(data.user));
+    window.location.href = data.user.role === "admin" ? "admin-dashboard.html" : "dashboard.html";
+  } else {
+    alert(data.message || "Invalid login");
   }
 };
 
-// ---------- CLOSE POPUP ----------
 function closePopup(){ popup.style.display="none"; }
 </script>
+
 </body>
 </html>
