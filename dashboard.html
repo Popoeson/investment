@@ -314,26 +314,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if(currentAction === "withdraw"){
-      if(!currentUser.verified){
-        alert("You must be a verified user to withdraw.");
-        closeModalAction();
-        return;
-      }
-      if(!currentUser.idFrontUrl || !currentUser.idBackUrl){
-        alert("Please upload both ID front and back before withdrawing.");
-        closeModalAction();
-        return;
-      }
-      const currentBalance = Number(document.getElementById("currentBalance").textContent.replace(/[^0-9.-]/g,""));
-      if(amountNum < minWithdrawal){
-        alert(`Minimum withdrawal is $${minWithdrawal}`);
-        return;
-      }
-      if(amountNum > currentBalance){
-        alert("Withdrawal amount exceeds your balance.");
-        return;
-      }
-    }
+  if(!currentUser.verified){
+    alert("You must be a verified user to withdraw.");
+    closeModalAction();
+    return;
+  }
+
+  if(!currentUser.idFrontUrl?.trim() || !currentUser.idBackUrl?.trim()){
+    alert("Please upload both ID front and back before withdrawing.");
+    closeModalAction();
+    return;
+  }
+
+  const currentBalance = Number(
+    document.getElementById("currentBalance").textContent.replace(/[^0-9.-]/g,"")
+  );
+  if(amountNum < minWithdrawal){
+    alert(`Minimum withdrawal is $${minWithdrawal}`);
+    return;
+  }
+  if(amountNum > currentBalance){
+    alert("Withdrawal amount exceeds your balance.");
+    return;
+  }
+}
 
     let msg = "";
     if(currentAction === "deposit") msg = `Hello Admin, I want to deposit $${amountNum}.`;
