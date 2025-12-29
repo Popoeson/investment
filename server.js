@@ -260,6 +260,7 @@ app.get('/api/me', authMiddleware, async (req, res) => {
 
     res.json({
       user: {
+        id: user._id, // include user ID for frontend reference
         firstName: user.firstName,
         lastName: user.lastName,
         dob: user.dob,
@@ -270,15 +271,17 @@ app.get('/api/me', authMiddleware, async (req, res) => {
         state: user.state || '',
         zip: user.zip || '',
         selfieUrl: user.selfieUrl || '',
+        idFrontUrl: user.idFrontUrl || '', // added
+        idBackUrl: user.idBackUrl || '',   // added
         verified: user.verified,
-        balance: user.balance,
-        totalDeposit: user.totalDeposit,
-        totalInvestment: user.totalInvestment,
-        totalWithdrawal: user.totalWithdrawal,
-        totalProfit: user.totalProfit,
+        balance: user.balance || 0,
+        totalDeposit: user.totalDeposit || 0,
+        totalInvestment: user.totalInvestment || 0,
+        totalWithdrawal: user.totalWithdrawal || 0,
+        totalProfit: user.totalProfit || 0,
+        minDeposit: user.minDeposit || 0,
+        minWithdrawal: user.minWithdrawal || 0,
         transactions: user.transactions || [],
-        minDeposit: user.minDeposit,
-        minWithdrawal: user.minWithdrawal,
         investments: investments.map(inv => ({
           _id: inv._id,
           capital: inv.capital,
@@ -294,7 +297,6 @@ app.get('/api/me', authMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch user info' });
   }
 });
-
 
 // --------------------------
 // Admin Routes
