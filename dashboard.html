@@ -333,10 +333,10 @@ async function loadDashboard(){
   }
 }
 
-function attachActionButtons(){
+function attachActionButtons() {
   document.getElementById("depositBtn").onclick = () => {
     const amount = prompt(`Minimum deposit is $${minDeposit}. Enter deposit amount:`, minDeposit);
-    if(amount && Number(amount) >= minDeposit){
+    if (amount && Number(amount) >= minDeposit) {
       const msg = `Hello Admin, I want to deposit $${amount}.`;
       window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(msg)}`);
     }
@@ -344,28 +344,56 @@ function attachActionButtons(){
 
   document.getElementById("investBtn").onclick = () => {
     const amount = prompt("Enter investment amount:");
-    if(amount){
+    if (amount) {
       const msg = `Hello Admin, I want to invest $${amount}.`;
       window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(msg)}`);
     }
   };
 
   document.getElementById("withdrawBtn").onclick = () => {
+    // Ensure currentUser is loaded
+    if (!currentUser) {
+      alert("User data not loaded. Please refresh the page.");
+      return;
+    }
+
+    // Check if user is verified
+    if (!currentUser.verified) {
+      alert("You must be a verified user to withdraw.");
+      return;
+    }
+
+    // Check if ID is uploaded
+    if (!currentUser.idFrontUrl || !currentUser.idBackUrl) {
+      alert("Please upload both ID front and back before withdrawing.");
+      return;
+    }
+
     const currentBalance = Number(
-      document.getElementById("currentBalance").textContent.replace(/[^0-9.-]/g,"")
+      document.getElementById("currentBalance").textContent.replace(/[^0-9.-]/g, "")
     );
 
-    if(currentBalance < minWithdrawal){
-      alert(`Your balance is below minimum withdrawal amount: $${minWithdrawal}`);
+    // Check minimum withdrawal
+    if (currentBalance < minWithdrawal) {
+      alert(`Your balance is below the minimum withdrawal amount: $${minWithdrawal}`);
       return;
     }
 
     const amount = prompt(`Enter withdrawal amount (minimum $${minWithdrawal}):`);
+    const amountNum = Number(amount);
 
-    if(amount && Number(amount) >= minWithdrawal){
-      const msg = `Hello Admin, I want to withdraw $${amount}.`;
-      window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(msg)}`);
+    if (!amount || isNaN(amountNum) || amountNum < minWithdrawal) {
+      alert(`Invalid amount. Minimum withdrawal is $${minWithdrawal}.`);
+      return;
     }
+
+    if (amountNum > currentBalance) {
+      alert("Withdrawal amount exceeds your current balance.");
+      return;
+    }
+
+    const msg = `Hello Admin, I want to withdraw $${amountNum}.`;
+    window.open(`https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(msg)}`);
   };
 }
 
