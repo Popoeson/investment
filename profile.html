@@ -6,138 +6,90 @@
 <title>My Profile - Ann Investment</title>
 
 <style>
-body {
-  margin: 0; 
-  font-family: Arial, sans-serif; 
-  background: #FFECCC; 
-  color: #5E1010;
+body { margin:0; font-family:Arial,sans-serif; background:#FFECCC; color:#5E1010; }
+.container { padding:15px; }
+
+.top-bar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+.menu-icon{ font-size:28px; font-weight:bold; cursor:pointer; }
+
+.profile-card{
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 4px 15px rgba(0,0,0,.15);
 }
 
-.container {
-  padding: 15px;
+.profile-pic{
+  width:120px; height:120px; border-radius:50%;
+  object-fit:cover; border:4px solid #5E1010;
+  cursor:pointer; display:block; margin:0 auto 15px auto;
 }
 
-/* TOP BAR */
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.menu-icon { font-size: 28px; font-weight: bold; cursor: pointer; }
-
-/* PROFILE CARD */
-.profile-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+.field-group{ margin-bottom:15px; }
+label{ font-weight:bold; font-size:14px; }
+input{
+  width:100%; padding:10px; border-radius:6px;
+  border:1px solid #ccc; margin-top:6px; background:#fdfdfd;
 }
 
-.profile-pic {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid #5E1010;
-  cursor: pointer;
-  display: block;
-  margin: 0 auto 15px auto;
+.edit-btn,.save-btn,.cancel-btn,.change-pic-btn{
+  width:100%; padding:12px; border:none; border-radius:8px;
+  font-weight:bold; margin-top:10px; cursor:pointer; color:white;
 }
+.edit-btn{ background:#5E1010; }
+.save-btn{ background:green; display:none; }
+.cancel-btn{ background:gray; display:none; }
+.change-pic-btn{ background:#5E1010; display:none; }
 
-/* INPUTS */
-.field-group { margin-bottom: 15px; }
-label { font-weight: bold; font-size: 14px; }
-input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  margin-top: 6px;
-  background: #fdfdfd;
+/* ID SECTION */
+.id-section{
+  margin-top:20px;
+  padding:15px;
+  border:1px dashed #5E1010;
+  border-radius:10px;
+  display:none;
 }
-
-/* BUTTONS */
-.edit-btn, .save-btn, .cancel-btn, .change-pic-btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  margin-top: 10px;
-  cursor: pointer;
-  color: white;
+.preview-id{
+  width:100%; max-width:260px;
+  margin:10px auto;
+  display:block;
+  border-radius:10px;
+  cursor:pointer;
 }
-.edit-btn { background: #5E1010; }
-.save-btn { background: green; display: none; }
-.cancel-btn { background: gray; display: none; }
-.change-pic-btn { background: #5E1010; display: none; }
 
 /* MODAL */
-.modal {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(5px);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
+.modal{
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,.7); backdrop-filter:blur(5px);
+  display:none; justify-content:center; align-items:center; z-index:2000;
 }
-.modal img {
-  width: 90%;
-  max-width: 400px;
-  border-radius: 10px;
-}
-.modal-close {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  font-size: 28px;
-  color: white;
-  cursor: pointer;
+.modal img{ width:90%; max-width:400px; border-radius:10px; }
+.modal-close{
+  position:absolute; top:20px; right:20px;
+  font-size:28px; color:white; cursor:pointer;
 }
 
-/* SIDEBAR OVERLAY */
-.sidebar-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.4);
-  display: none;
-  z-index: 1000;
+/* SIDEBAR */
+.sidebar-overlay{
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,.4); display:none; z-index:1000;
 }
-
-/* GLASS SIDEBAR */
-.sidebar {
-  width: 250px;
-  height: 100%;
-  position: fixed;
-  top: 0; left: -250px;
-  padding: 20px;
-  box-sizing: border-box;
-  transition: left 0.3s ease;
-  background: rgba(94, 16, 16, 0.75);
-  backdrop-filter: blur(10px);
-  color: #FFECCC;
-  z-index: 1001;
+.sidebar{
+  width:250px; height:100%; position:fixed;
+  top:0; left:-250px; padding:20px;
+  transition:left .3s ease;
+  background:rgba(94,16,16,.75);
+  backdrop-filter:blur(10px);
+  color:#FFECCC; z-index:1001;
 }
-.sidebar a {
-  display: block;
-  padding: 12px 0;
-  color: #FFECCC;
-  text-decoration: none;
-}
+.sidebar a{ display:block; padding:12px 0; color:#FFECCC; text-decoration:none; }
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR OVERLAY -->
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <h3>Menu</h3>
   <a href="dashboard.html">Dashboard</a>
@@ -146,7 +98,6 @@ input {
 
 <div class="container">
 
-  <!-- TOP BAR -->
   <div class="top-bar">
     <h2>My Profile</h2>
     <div class="menu-icon" onclick="openSidebar()">☰</div>
@@ -154,62 +105,36 @@ input {
 
   <div class="profile-card">
 
-    <!-- Passport -->
     <img id="passportImg" class="profile-pic" src="placeholder.jpg">
-
     <button class="change-pic-btn" id="changePicBtn">Change Photo</button>
     <input type="file" id="selfieInput" accept="image/*" style="display:none">
 
-    <!-- Verified Status -->
     <div id="verifiedStatus" style="text-align:center; margin-bottom:15px; font-weight:bold;"></div>
 
-    <!-- Fields -->
-    <div class="field-group">
-      <label>First Name</label>
-      <input id="firstName" disabled>
+    <!-- FIELDS -->
+    <div class="field-group"><label>First Name</label><input id="firstName" disabled></div>
+    <div class="field-group"><label>Last Name</label><input id="lastName" disabled></div>
+    <div class="field-group"><label>Date of Birth</label><input id="dob" type="date" disabled></div>
+    <div class="field-group"><label>Phone</label><input id="phone" disabled></div>
+    <div class="field-group"><label>Email</label><input id="email" disabled></div>
+    <div class="field-group"><label>Street</label><input id="street" disabled></div>
+    <div class="field-group"><label>City</label><input id="city" disabled></div>
+    <div class="field-group"><label>State</label><input id="state" disabled></div>
+    <div class="field-group"><label>Zip Code</label><input id="zip" disabled></div>
+
+    <!-- ID SECTION -->
+    <div class="id-section" id="idSection">
+      <h4 style="margin-top:0;">Identity Verification</h4>
+
+      <label>ID Front</label>
+      <img id="idFrontPreview" class="preview-id" style="display:none">
+      <input type="file" id="idFrontInput" accept="image/*" style="display:none">
+
+      <label>ID Back</label>
+      <img id="idBackPreview" class="preview-id" style="display:none">
+      <input type="file" id="idBackInput" accept="image/*" style="display:none">
     </div>
 
-    <div class="field-group">
-      <label>Last Name</label>
-      <input id="lastName" disabled>
-    </div>
-
-    <div class="field-group">
-      <label>Date of Birth</label>
-      <input id="dob" type="date" disabled>
-    </div>
-
-    <div class="field-group">
-      <label>Phone</label>
-      <input id="phone" disabled>
-    </div>
-
-    <div class="field-group">
-      <label>Email</label>
-      <input id="email" disabled>
-    </div>
-
-    <div class="field-group">
-      <label>Street</label>
-      <input id="street" disabled>
-    </div>
-
-    <div class="field-group">
-      <label>City</label>
-      <input id="city" disabled>
-    </div>
-
-    <div class="field-group">
-      <label>State</label>
-      <input id="state" disabled>
-    </div>
-
-    <div class="field-group">
-      <label>Zip Code</label>
-      <input id="zip" disabled>
-    </div>
-
-    <!-- Buttons -->
     <button class="edit-btn" id="editBtn">Edit Profile</button>
     <button class="save-btn" id="saveBtn">Save Changes</button>
     <button class="cancel-btn" id="cancelBtn">Cancel</button>
@@ -217,7 +142,6 @@ input {
   </div>
 </div>
 
-<!-- MODAL -->
 <div class="modal" id="previewModal">
   <div class="modal-close" onclick="closeModal()">×</div>
   <img id="previewImg">
@@ -226,72 +150,96 @@ input {
 <script>
 const backend = "https://investment-9ub4.onrender.com/api";
 const token = localStorage.getItem("token");
-
-if(!token) window.location.href = "sign-in.html";
+if(!token) location.href = "sign-in.html";
 
 /* SIDEBAR */
-function openSidebar() {
-  sidebar.style.left = "0";
-  sidebarOverlay.style.display = "block";
-}
-function closeSidebar() {
-  sidebar.style.left = "-250px";
-  sidebarOverlay.style.display = "none";
-}
+function openSidebar(){ sidebar.style.left="0"; sidebarOverlay.style.display="block"; }
+function closeSidebar(){ sidebar.style.left="-250px"; sidebarOverlay.style.display="none"; }
 sidebarOverlay.addEventListener("click", closeSidebar);
 
+let currentUser = null;
+
 /* LOAD PROFILE */
-async function loadProfile() {
+async function loadProfile(){
   const res = await fetch(`${backend}/me`, {
-    headers: { "Authorization": `Bearer ${token}` }
+    headers:{ Authorization:`Bearer ${token}` }
   });
 
   const { user } = await res.json();
+  currentUser = user;
 
   passportImg.src = user.selfieUrl || "placeholder.jpg";
 
   verifiedStatus.innerHTML = user.verified ? "✅ Verified User" : "❌ Unverified User";
   verifiedStatus.style.color = user.verified ? "green" : "red";
 
-  firstName.value = user.firstName;
-  lastName.value = user.lastName;
+  firstName.value = user.firstName || "";
+  lastName.value = user.lastName || "";
   dob.value = user.dob ? user.dob.split("T")[0] : "";
-  phone.value = user.phone;
-  email.value = user.email;
-  street.value = user.street;
-  city.value = user.city;
-  state.value = user.state;
-  zip.value = user.zip;
+  phone.value = user.phone || "";
+  email.value = user.email || "";
+  street.value = user.street || "";
+  city.value = user.city || "";
+  state.value = user.state || "";
+  zip.value = user.zip || "";
+
+  // ID previews
+  if(user.idFrontUrl){
+    idFrontPreview.src = user.idFrontUrl;
+    idFrontPreview.style.display = "block";
+  }
+  if(user.idBackUrl){
+    idBackPreview.src = user.idBackUrl;
+    idBackPreview.style.display = "block";
+  }
+
+  // show section only if user has or can upload
+  document.getElementById("idSection").style.display = "block";
 }
 loadProfile();
 
-/* ENABLE EDIT MODE */
+/* EDIT MODE */
 editBtn.onclick = () => {
   document.querySelectorAll("input").forEach(i => i.disabled = false);
+
   changePicBtn.style.display = "block";
+  idFrontInput.style.display = "block";
+  idBackInput.style.display = "block";
+
   editBtn.style.display = "none";
   saveBtn.style.display = "block";
   cancelBtn.style.display = "block";
 };
 
-/* CANCEL EDIT */
+/* CANCEL */
 cancelBtn.onclick = () => location.reload();
 
 /* CHANGE PHOTO */
 changePicBtn.onclick = () => selfieInput.click();
-
 selfieInput.onchange = () => {
   const file = selfieInput.files[0];
-  if (!file) return;
-
+  if(!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
-    passportImg.src = e.target.result; // instant preview
-  };
+  reader.onload = e => passportImg.src = e.target.result;
   reader.readAsDataURL(file);
 };
 
-/* SAVE PROFILE */
+/* ID PREVIEW HANDLERS */
+idFrontInput.onchange = () => previewFile(idFrontInput, idFrontPreview);
+idBackInput.onchange = () => previewFile(idBackInput, idBackPreview);
+
+function previewFile(input, img){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    img.src = e.target.result;
+    img.style.display = "block";
+  };
+  reader.readAsDataURL(file);
+}
+
+/* SAVE */
 saveBtn.onclick = async () => {
 
   const formData = new FormData();
@@ -305,31 +253,36 @@ saveBtn.onclick = async () => {
   formData.append("state", state.value);
   formData.append("zip", zip.value);
 
-  if (selfieInput.files[0]) {
-    formData.append("selfie", selfieInput.files[0]);
-  }
+  if(selfieInput.files[0]) formData.append("selfie", selfieInput.files[0]);
+  if(idFrontInput.files[0]) formData.append("idFront", idFrontInput.files[0]);
+  if(idBackInput.files[0]) formData.append("idBack", idBackInput.files[0]);
 
   const res = await fetch(`${backend}/update-profile`, {
-    method: "PUT",
-    headers: {
-      "Authorization": `Bearer ${token}`
-    },
-    body: formData
+    method:"PUT",
+    headers:{ Authorization:`Bearer ${token}` },
+    body:formData
   });
 
-  alert("Profile updated successfully!");
-  location.reload();
+  const data = await res.json();
+
+  if(res.ok){
+    alert("Profile updated successfully!");
+    location.reload();
+  } else {
+    alert(data.message || "Update failed");
+  }
 };
 
-/* PREVIEW PASSPORT */
-passportImg.onclick = () => {
-  previewImg.src = passportImg.src;
+/* IMAGE PREVIEW MODAL */
+passportImg.onclick = () => openPreview(passportImg.src);
+idFrontPreview.onclick = () => openPreview(idFrontPreview.src);
+idBackPreview.onclick = () => openPreview(idBackPreview.src);
+
+function openPreview(src){
+  previewImg.src = src;
   previewModal.style.display = "flex";
-};
-
-function closeModal(){
-  previewModal.style.display = "none";
 }
+function closeModal(){ previewModal.style.display="none"; }
 </script>
 
 </body>
