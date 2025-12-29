@@ -190,31 +190,34 @@ app.post('/api/login', async (req, res) => {
     // Try User first
     let user = await User.findOne({ email });
     if (user && user.password === password) {
-      const token = jwt.sign(
-        { id: user._id, email: user.email, role: 'user' },
-        process.env.JWT_SECRET || 'CHANGE_THIS_SECRET',
-        { expiresIn: '3d' }
-      );
+  const token = jwt.sign(
+    { id: user._id, email: user.email, role: 'user' },
+    process.env.JWT_SECRET || 'CHANGE_THIS_SECRET',
+    { expiresIn: '3d' }
+  );
 
-      return res.json({
-        message: 'Login successful',
-        token,
-        user: {
-          id: user._id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          verified: user.verified,
-          balance: user.balance || 0,
-          totalDeposit: user.totalDeposit || 0,
-          totalInvestment: user.totalInvestment || 0,
-          totalWithdrawal: user.totalWithdrawal || 0,
-          totalProfit: user.totalProfit || 0,
-          transactions: user.transactions || [],
-          role: 'user'
-        }
-      });
+  return res.json({
+    message: 'Login successful',
+    token,
+    user: {
+      id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      verified: user.verified,
+      idFrontUrl: user.idFrontUrl || "",
+      idBackUrl: user.idBackUrl || "",
+      selfieUrl: user.selfieUrl || "",
+      balance: user.balance || 0,
+      totalDeposit: user.totalDeposit || 0,
+      totalInvestment: user.totalInvestment || 0,
+      totalWithdrawal: user.totalWithdrawal || 0,
+      totalProfit: user.totalProfit || 0,
+      transactions: user.transactions || [],
+      role: 'user'
     }
+  });
+}
 
     // Try Admin if not found in User
     const admin = await Admin.findOne({ email });
